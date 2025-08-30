@@ -8,8 +8,9 @@ import { createServer } from 'http';
 import dotenv from 'dotenv';
 
 import logsRoutes from './src/routes/logs.routes.js';
-import analysisRoutes from './src/routes/analysis.routes.js';
-import servicesRoutes from './src/routes/services.routes.js';
+import { analysisRouter } from './src/routes/analysis.routes.js'; // Changed to named import
+import { servicesRouter } from './src/routes/services.routes.js'; // Changed to named import
+// import serviceManagementRoutes from './src/routes/serviceManagement.routes.js'; // Comment this out for now
 
 import { FileWatcherService } from './src/services/fileWatcher.service.js';
 import { errorHandler } from './src/middleware/errorHandler.js';
@@ -42,8 +43,9 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // API Routes
 app.use('/api/logs', logsRoutes);
-app.use('/api/analysis', analysisRoutes);
-app.use('/api/services', servicesRoutes);
+app.use('/api/analysis', analysisRouter); // Changed to use the named import
+app.use('/api/services', servicesRouter); // Changed to use the named import
+// app.use('/api/service-management', serviceManagementRoutes); // Comment this out for now
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -99,7 +101,7 @@ app.use(errorHandler);
 
 // WebSocket connection handling
 wss.on('connection', (ws) => {
-  console.log('📡 Client connected to WebSocket');
+  console.log('Client connected to WebSocket');
   
   // Send welcome message
   ws.send(JSON.stringify({
@@ -109,17 +111,17 @@ wss.on('connection', (ws) => {
   }));
   
   ws.on('close', () => {
-    console.log('📡 Client disconnected from WebSocket');
+    console.log('Client disconnected from WebSocket');
   });
 
   ws.on('error', (error) => {
-    console.error('📡 WebSocket error:', error);
+    console.error('WebSocket error:', error);
   });
 
   ws.on('message', (data) => {
     try {
       const message = JSON.parse(data.toString());
-      console.log('📡 Received message:', message);
+      console.log('Received message:', message);
       
       // Handle different message types
       if (message.type === 'PING') {
@@ -129,7 +131,7 @@ wss.on('connection', (ws) => {
         }));
       }
     } catch (error) {
-      console.error('📡 Error parsing WebSocket message:', error);
+      console.error('Error parsing WebSocket message:', error);
     }
   });
 });
@@ -139,45 +141,45 @@ if (config.fileWatcher.enabled) {
   try {
     const fileWatcher = new FileWatcherService();
     fileWatcher.startWatching();
-    console.log('🔍 File watcher initialized');
+    console.log('File watcher initialized');
   } catch (error) {
-    console.warn('🔍 File watcher failed to initialize:', error.message);
+    console.warn('File watcher failed to initialize:', error.message);
   }
 }
 
 const PORT = config.server.port;
 
 server.listen(PORT, () => {
-  console.log('\n🚀 Friskit Monitoring API Server Started');
-  console.log(`📊 API Server: http://localhost:${PORT}`);
-  console.log(`📚 API Documentation: http://localhost:${PORT}/api`);
-  console.log(`🏥 Health Check: http://localhost:${PORT}/health`);
-  console.log(`🔍 Monitoring logs at: ${config.friskit.logsBasePath}`);
-  console.log(`🌍 Environment: ${config.server.nodeEnv}`);
-  console.log(`🔌 WebSocket: ws://localhost:${PORT}`);
+  console.log('\nFriskit Monitoring API Server Started');
+  console.log(`API Server: http://localhost:${PORT}`);
+  console.log(`API Documentation: http://localhost:${PORT}/api`);
+  console.log(`Health Check: http://localhost:${PORT}/health`);
+  console.log(`Monitoring logs at: ${config.friskit.logsBasePath}`);
+  console.log(`Environment: ${config.server.nodeEnv}`);
+  console.log(`WebSocket: ws://localhost:${PORT}`);
   console.log('=====================================\n');
 });
 
 // Graceful shutdown
 process.on('SIGINT', () => {
-  console.log('\n🛑 Shutting down gracefully...');
+  console.log('\nShutting down gracefully...');
   
   if (global.fileWatcher) {
     global.fileWatcher.stopWatching();
   }
   
   server.close(() => {
-    console.log('✅ Server closed');
+    console.log('Server closed');
     process.exit(0);
   });
 });
 
 process.on('uncaughtException', (error) => {
-  console.error('❌ Uncaught Exception:', error);
+  console.error('Uncaught Exception:', error);
   process.exit(1);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
   process.exit(1);
 });

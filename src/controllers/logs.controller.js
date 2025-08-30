@@ -1,7 +1,6 @@
-// ============================================
-
-// src/controllers/logs.controller.js
+// src/controllers/logs.controller.js - Simple fix
 import { LogParserService } from '../services/logParser.service.js';
+import { getValidServices, getServiceConfig } from '../config/index.js';
 import moment from 'moment';
 
 const logParser = new LogParserService();
@@ -11,12 +10,12 @@ export const getLogsByDate = async (req, res) => {
     const { service, date } = req.params;
     const { limit, offset, level } = req.query;
 
-    // Validate service
-    const validServices = ['api', 'ui', 'notification'];
+    // ✅ DYNAMIC SERVICE VALIDATION
+    const validServices = getValidServices();
     if (!validServices.includes(service.toLowerCase())) {
       return res.status(400).json({ 
         error: 'Invalid service', 
-        message: `Service must be one of: ${validServices.join(', ')}` 
+        message: `Service must be one of: ${validServices.join(', ')}`
       });
     }
 
@@ -105,7 +104,7 @@ export const getLatestLogs = async (req, res) => {
     const { limit } = req.query;
 
     // Validate service
-    const validServices = ['api', 'ui', 'notification'];
+    const validServices = getValidServices();
     if (!validServices.includes(service.toLowerCase())) {
       return res.status(400).json({ 
         error: 'Invalid service', 
@@ -149,7 +148,7 @@ export const getAvailableDates = async (req, res) => {
     const { service } = req.params;
     
     // Validate service
-    const validServices = ['api', 'ui', 'notification'];
+    const validServices = getValidServices();
     if (!validServices.includes(service.toLowerCase())) {
       return res.status(400).json({ 
         error: 'Invalid service', 
@@ -211,7 +210,7 @@ export const searchLogs = async (req, res) => {
     const { query, date, level, limit } = req.query;
 
     // Validate service
-    const validServices = ['api', 'ui', 'notification'];
+    const validServices = getValidServices();
     if (!validServices.includes(service.toLowerCase())) {
       return res.status(400).json({ 
         error: 'Invalid service', 
@@ -253,6 +252,57 @@ export const searchLogs = async (req, res) => {
     });
   }
 };
+
+export const getAvailableServices = async (req, res) => {
+  try {
+    const validServices = getValidServices();
+    const servicesWithDetails = [];
+
+    for (const serviceName of validServices) {
+      const serviceConfig = getServiceConfig(serviceName);
+      const status = {
+        name: serviceName,
+        displayName: serviceConfig?.displayName || serviceName,
+        description: serviceConfig?.description || `${serviceName} service`,
+        logPath: serviceConfig?.logPath,
+        isAvailable: !!serviceConfig,
+        hasToday: false,
+        totalDates: 0
+      };
+
+      // Check if today's logs exist
+      try {
+        const today = moment().format('YYYY-MM-DD');
+        const todayLogs = await logParser.getLogsByDate(serviceName, today);
+        status.hasToday = todayLogs.exists;
+
+        // Get total available dates
+        const dates = await logParser.getAvailableLogDates(serviceName);
+        status.totalDates = dates.length;
+      } catch (error) {
+        // Service might not be accessible
+        status.error = error.message;
+      }
+
+      servicesWithDetails.push(status);
+    }
+
+    res.json({
+      services: servicesWithDetails,
+      totalServices: validServices.length,
+      availableServices: servicesWithDetails.filter(s => s.isAvailable).length,
+      activeServices: servicesWithDetails.filter(s => s.hasToday).length,
+      timestamp: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Error in getAvailableServices:', error);
+    res.status(500).json({ 
+      error: 'Failed to retrieve available services', 
+      message: error.message 
+    });
+  }
+}
 
 // Helper functions for log styling
 function getLogColor(level) {

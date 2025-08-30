@@ -1,13 +1,15 @@
-// src/controllers/services.controller.js
-import { config } from '../config/index.js';
+// src/controllers/services.controller.js - Fixed
+import { config, getValidServices, getServiceConfig } from '../config/index.js';
 import fs from 'fs-extra';
 import path from 'path';
 
 export const getServicesStatus = async (req, res) => {
   try {
     const services = [];
+    const validServices = getValidServices();
     
-    for (const [serviceName, serviceConfig] of Object.entries(config.friskit.services)) {
+    for (const serviceName of validServices) {
+      const serviceConfig = getServiceConfig(serviceName);
       const status = await checkServiceStatus(serviceName, serviceConfig);
       services.push(status);
     }
@@ -34,7 +36,7 @@ export const getServiceDetails = async (req, res) => {
     const { service } = req.params;
     
     // Validate service
-    const validServices = ['api', 'ui', 'notification'];
+    const validServices = getValidServices();
     if (!validServices.includes(service.toLowerCase())) {
       return res.status(400).json({ 
         error: 'Invalid service', 
@@ -42,7 +44,7 @@ export const getServiceDetails = async (req, res) => {
       });
     }
 
-    const serviceConfig = config.friskit.services[service.toLowerCase()];
+    const serviceConfig = getServiceConfig(service.toLowerCase());
     if (!serviceConfig) {
       return res.status(404).json({ error: 'Service not found' });
     }
