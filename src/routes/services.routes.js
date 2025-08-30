@@ -1,3 +1,4 @@
+// src/routes/services.routes.js
 import express from 'express';
 import { getServicesStatus, getServiceDetails } from '../controllers/services.controller.js';
 

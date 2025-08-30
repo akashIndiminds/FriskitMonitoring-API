@@ -1,97 +1,92 @@
 {
   "info": {
-    "name": "Friskit Monitoring API",
-    "description": "Complete API collection for Friskit Error Monitoring System",
+    "name": "Friskit Monitoring API v2.0",
+    "description": "Complete API collection for Friskit Error Monitoring System - Updated Version",
+    "version": "2.0.0",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     {
       "key": "base_url",
-      "value": "http://localhost:5000"
+      "value": "http://localhost:5000",
+      "description": "Base URL for the API"
     }
   ],
   "item": [
     {
       "name": "Health & Status",
+      "description": "System health and service status endpoints",
       "item": [
         {
           "name": "Health Check",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{base_url}}/health"
+            "url": "{{base_url}}/health",
+            "description": "Check if the API server is running"
           }
         },
         {
-          "name": "All Services Status",
+          "name": "API Documentation",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{base_url}}/api/services/status"
-          }
-        },
-        {
-          "name": "Service Details",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/services/:service/details",
-              "host": ["{{base_url}}"],
-              "path": ["api", "services", ":service", "details"],
-              "variable": [
-                {
-                  "key": "service",
-                  "value": "api",
-                  "description": "Service name: api, ui, or notification"
-                }
-              ]
-            }
+            "url": "{{base_url}}/api",
+            "description": "Get API documentation and available endpoints"
           }
         }
       ]
     },
     {
       "name": "Logs Management",
+      "description": "Log retrieval and search endpoints",
       "item": [
         {
-          "name": "Get Available Log Dates",
+          "name": "Get Available Dates - API Service",
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/logs/:service/dates",
-              "host": ["{{base_url}}"],
-              "path": ["api", "logs", ":service", "dates"],
-              "variable": [
-                {
-                  "key": "service",
-                  "value": "api",
-                  "description": "Service: api, ui, notification"
-                }
-              ]
-            }
+            "url": "{{base_url}}/api/logs/api/dates",
+            "description": "Get all available log dates for API service"
           }
         },
         {
-          "name": "Get Logs by Date",
+          "name": "Get Available Dates - UI Service",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/logs/ui/dates",
+            "description": "Get all available log dates for UI service"
+          }
+        },
+        {
+          "name": "Get Available Dates - Notification Service",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/logs/notification/dates",
+            "description": "Get all available log dates for Notification service"
+          }
+        },
+        {
+          "name": "Get Today's Logs - API Service",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/logs/:service/date/:date?limit=100&offset=0&level=ERROR",
+              "raw": "{{base_url}}/api/logs/api/date/today?limit=100&offset=0",
               "host": ["{{base_url}}"],
-              "path": ["api", "logs", ":service", "date", ":date"],
+              "path": ["api", "logs", "api", "date", "today"],
               "query": [
                 {
                   "key": "limit",
                   "value": "100",
-                  "description": "Number of logs to return"
+                  "description": "Number of logs to return (default: 100)"
                 },
                 {
                   "key": "offset",
                   "value": "0",
-                  "description": "Starting position"
+                  "description": "Starting position (default: 0)"
                 },
                 {
                   "key": "level",
@@ -99,271 +94,204 @@
                   "description": "Filter by log level: CRITICAL, ERROR, WARNING, INFO, DEBUG",
                   "disabled": true
                 }
-              ],
-              "variable": [
-                {
-                  "key": "service",
-                  "value": "api"
-                },
-                {
-                  "key": "date",
-                  "value": "2025-08-29",
-                  "description": "Date in YYYY-MM-DD format, or 'today', 'yesterday'"
-                }
               ]
-            }
+            },
+            "description": "Get today's logs for API service"
           }
         },
         {
-          "name": "Get Latest Logs",
+          "name": "Get Logs by Date - UI Service",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/logs/:service/latest?limit=50",
+              "raw": "{{base_url}}/api/logs/ui/date/2025-08-30?limit=50&level=WARNING",
               "host": ["{{base_url}}"],
-              "path": ["api", "logs", ":service", "latest"],
+              "path": ["api", "logs", "ui", "date", "2025-08-30"],
               "query": [
                 {
                   "key": "limit",
                   "value": "50"
-                }
-              ],
-              "variable": [
+                },
                 {
-                  "key": "service",
-                  "value": "ui"
+                  "key": "level",
+                  "value": "WARNING"
                 }
               ]
-            }
+            },
+            "description": "Get logs for a specific date with filters"
           }
         },
         {
-          "name": "Search Logs",
+          "name": "Get Latest Logs - Notification Service",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/logs/:service/search?query=error&date=2025-08-29&level=ERROR&limit=20",
+              "raw": "{{base_url}}/api/logs/notification/latest?limit=25",
               "host": ["{{base_url}}"],
-              "path": ["api", "logs", ":service", "search"],
+              "path": ["api", "logs", "notification", "latest"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "25",
+                  "description": "Number of latest logs to return"
+                }
+              ]
+            },
+            "description": "Get latest logs (today's logs)"
+          }
+        },
+        {
+          "name": "Search Logs - API Service",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/logs/api/search?query=error&date=2025-08-30&level=ERROR&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "logs", "api", "search"],
               "query": [
                 {
                   "key": "query",
                   "value": "error",
-                  "description": "Search term"
+                  "description": "Search term to look for in log messages"
                 },
                 {
                   "key": "date",
-                  "value": "2025-08-29",
-                  "description": "Date to search"
+                  "value": "2025-08-30",
+                  "description": "Date to search (YYYY-MM-DD format)"
                 },
                 {
                   "key": "level",
                   "value": "ERROR",
-                  "description": "Filter by level"
+                  "description": "Filter by log level"
                 },
                 {
                   "key": "limit",
-                  "value": "20"
-                }
-              ],
-              "variable": [
-                {
-                  "key": "service",
-                  "value": "notification"
+                  "value": "20",
+                  "description": "Maximum number of results"
                 }
               ]
-            }
+            },
+            "description": "Search logs with multiple filters"
           }
         }
       ]
     },
     {
       "name": "Error Analysis",
+      "description": "Error analysis and monitoring endpoints",
       "item": [
         {
-          "name": "Error Analysis",
+          "name": "Analyze Errors - API Service",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/errors/:service/analysis?date=2025-08-29",
+              "raw": "{{base_url}}/api/analysis/api/errors?date=2025-08-30",
               "host": ["{{base_url}}"],
-              "path": ["api", "errors", ":service", "analysis"],
+              "path": ["api", "analysis", "api", "errors"],
               "query": [
                 {
                   "key": "date",
-                  "value": "2025-08-29"
-                }
-              ],
-              "variable": [
-                {
-                  "key": "service",
-                  "value": "api"
+                  "value": "2025-08-30",
+                  "description": "Date to analyze (YYYY-MM-DD) - defaults to today"
                 }
               ]
-            }
+            },
+            "description": "Get detailed error analysis with solutions"
           }
         },
         {
-          "name": "Error Trends",
+          "name": "Analyze Errors - UI Service",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/analysis/ui/errors",
+            "description": "Analyze errors for UI service (today)"
+          }
+        },
+        {
+          "name": "Analyze Errors - Notification Service",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/analysis/notification/errors",
+            "description": "Analyze errors for Notification service"
+          }
+        },
+        {
+          "name": "Get Error Trends - API Service",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/errors/:service/trends?days=7",
+              "raw": "{{base_url}}/api/analysis/api/trends?days=7",
               "host": ["{{base_url}}"],
-              "path": ["api", "errors", ":service", "trends"],
+              "path": ["api", "analysis", "api", "trends"],
               "query": [
                 {
                   "key": "days",
                   "value": "7",
-                  "description": "Number of days to analyze"
-                }
-              ],
-              "variable": [
-                {
-                  "key": "service",
-                  "value": "ui"
+                  "description": "Number of days to analyze (1-30, default: 7)"
                 }
               ]
-            }
+            },
+            "description": "Get error trends over time for API service"
           }
         },
         {
-          "name": "Critical Errors Only",
+          "name": "Get Error Trends - UI Service",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/errors/:service/critical?date=2025-08-29&limit=10",
+              "raw": "{{base_url}}/api/analysis/ui/trends?days=14",
               "host": ["{{base_url}}"],
-              "path": ["api", "errors", ":service", "critical"],
-              "query": [
-                {
-                  "key": "date",
-                  "value": "2025-08-29"
-                },
-                {
-                  "key": "limit",
-                  "value": "10"
-                }
-              ],
-              "variable": [
-                {
-                  "key": "service",
-                  "value": "notification"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Errors by Category",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/errors/:service/categories?date=2025-08-29",
-              "host": ["{{base_url}}"],
-              "path": ["api", "errors", ":service", "categories"],
-              "query": [
-                {
-                  "key": "date",
-                  "value": "2025-08-29"
-                }
-              ],
-              "variable": [
-                {
-                  "key": "service",
-                  "value": "api"
-                }
-              ]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "AI Analysis",
-      "item": [
-        {
-          "name": "AI Error Analysis",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/analysis/:service/ai?date=2025-08-29&category=network",
-              "host": ["{{base_url}}"],
-              "path": ["api", "analysis", ":service", "ai"],
-              "query": [
-                {
-                  "key": "date",
-                  "value": "2025-08-29"
-                },
-                {
-                  "key": "category",
-                  "value": "network",
-                  "description": "Error category to focus on",
-                  "disabled": true
-                }
-              ],
-              "variable": [
-                {
-                  "key": "service",
-                  "value": "api"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "AI Log Summary",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/analysis/:service/summary?date=2025-08-29",
-              "host": ["{{base_url}}"],
-              "path": ["api", "analysis", ":service", "summary"],
-              "query": [
-                {
-                  "key": "date",
-                  "value": "2025-08-29"
-                }
-              ],
-              "variable": [
-                {
-                  "key": "service",
-                  "value": "ui"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Issue Predictions",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/analysis/:service/predictions?days=7",
-              "host": ["{{base_url}}"],
-              "path": ["api", "analysis", ":service", "predictions"],
+              "path": ["api", "analysis", "ui", "trends"],
               "query": [
                 {
                   "key": "days",
-                  "value": "7"
-                }
-              ],
-              "variable": [
-                {
-                  "key": "service",
-                  "value": "notification"
+                  "value": "14"
                 }
               ]
-            }
+            },
+            "description": "Get 14-day error trends for UI service"
+          }
+        },
+        {
+          "name": "Get Critical Errors - API Service",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/analysis/api/critical?date=2025-08-30&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "analysis", "api", "critical"],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2025-08-30",
+                  "description": "Date to analyze (defaults to today)"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Maximum number of critical errors to return"
+                }
+              ]
+            },
+            "description": "Get only critical errors with immediate solutions"
+          }
+        },
+        {
+          "name": "Get Critical Errors - Notification Service",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/analysis/notification/critical",
+            "description": "Get critical errors for Notification service"
           }
         },
         {
@@ -371,10 +299,154 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{base_url}}/api/analysis/health"
+            "url": "{{base_url}}/api/analysis/health",
+            "description": "Get overall system health status for all services"
           }
         }
       ]
+    },
+    {
+      "name": "Services Management",
+      "description": "Service status and configuration endpoints",
+      "item": [
+        {
+          "name": "Get All Services Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/services/status",
+            "description": "Get status of all Friskit services"
+          }
+        },
+        {
+          "name": "Get API Service Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/services/api/details",
+            "description": "Get detailed information about API service"
+          }
+        },
+        {
+          "name": "Get UI Service Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/services/ui/details",
+            "description": "Get detailed information about UI service"
+          }
+        },
+        {
+          "name": "Get Notification Service Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/services/notification/details",
+            "description": "Get detailed information about Notification service"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sample Workflows",
+      "description": "Common API usage patterns",
+      "item": [
+        {
+          "name": "Daily Health Check Workflow",
+          "item": [
+            {
+              "name": "1. Check System Health",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{base_url}}/api/analysis/health",
+                "description": "Start with overall system health"
+              }
+            },
+            {
+              "name": "2. Get Today's API Logs",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{base_url}}/api/logs/api/date/today",
+                "description": "Check API service logs for today"
+              }
+            },
+            {
+              "name": "3. Analyze API Errors",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{base_url}}/api/analysis/api/errors",
+                "description": "Get error analysis with solutions"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Troubleshooting Workflow",
+          "item": [
+            {
+              "name": "1. Search for Specific Error",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/logs/api/search?query=connection failed&date=2025-08-30",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "logs", "api", "search"],
+                  "query": [
+                    {
+                      "key": "query",
+                      "value": "connection failed"
+                    },
+                    {
+                      "key": "date",
+                      "value": "2025-08-30"
+                    }
+                  ]
+                },
+                "description": "Search for specific error patterns"
+              }
+            },
+            {
+              "name": "2. Get Critical Errors Only",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{base_url}}/api/analysis/api/critical",
+                "description": "Focus on critical issues first"
+              }
+            },
+            {
+              "name": "3. Check Error Trends",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{base_url}}/api/analysis/api/trends?days=7",
+                "description": "See if this is a recurring issue"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Set current date for dynamic requests",
+          "pm.globals.set('current_date', new Date().toISOString().split('T')[0]);",
+          "",
+          "// Set yesterday's date",
+          "const yesterday = new Date();",
+          "yesterday.setDate(yesterday.getDate() - 1);",
+          "pm.globals.set('yesterday_date', yesterday.toISOString().split('T')[0]);"
+        ]
+      }
     }
   ]
 }

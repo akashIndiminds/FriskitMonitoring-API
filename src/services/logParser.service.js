@@ -23,7 +23,8 @@ export class LogParserService {
           date,
           logs: [],
           exists: false,
-          message: `No logs found for ${date}`
+          message: `No logs found for ${date}`,
+          filePath: logFilePath
         };
       }
 
@@ -37,7 +38,9 @@ export class LogParserService {
         exists: true,
         totalLines: logs.length,
         errors: logs.filter(log => log.level === 'ERROR').length,
-        warnings: logs.filter(log => log.level === 'WARNING').length
+        warnings: logs.filter(log => log.level === 'WARNING').length,
+        criticals: logs.filter(log => log.level === 'CRITICAL').length,
+        filePath: logFilePath
       };
     } catch (error) {
       console.error('Error reading log file:', error);
@@ -47,10 +50,14 @@ export class LogParserService {
 
   async getLatestLogs(serviceName, limit = 100) {
     try {
-      const service = this.getServiceConfig(serviceName);
       const todayDate = moment().format('YYYY-MM-DD');
+      const result = await this.getLogsByDate(serviceName, todayDate);
       
-      return await this.getLogsByDate(serviceName, todayDate);
+      if (result.exists && limit) {
+        result.logs = result.logs.slice(-limit); // Get latest entries
+      }
+      
+      return result;
     } catch (error) {
       console.error('Error getting latest logs:', error);
       throw error;
@@ -61,8 +68,8 @@ export class LogParserService {
     const lines = content.split('\n').filter(line => line.trim());
     const logs = [];
 
-    for (const line of lines) {
-      const parsedLog = this.parseLogLine(line);
+    for (let i = 0; i < lines.length; i++) {
+      const parsedLog = this.parseLogLine(lines[i], i + 1);
       if (parsedLog) {
         logs.push(parsedLog);
       }
@@ -71,50 +78,72 @@ export class LogParserService {
     return logs;
   }
 
-  parseLogLine(line) {
-    // Pattern for [YYYY-MM-DD HH:mm:ss] format
-    const timestampPattern = /^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\]/;
-    const match = line.match(timestampPattern);
+  parseLogLine(line, lineNumber) {
+    // Enhanced pattern for different timestamp formats
+    const timestampPatterns = [
+      /^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\]/,  // [2024-08-30 12:30:45]
+      /^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})/,      // 2024-08-30 12:30:45
+      /^\[(\d{2}:\d{2}:\d{2})\]/,                      // [12:30:45]
+      /^(\d{2}:\d{2}:\d{2})/                           // 12:30:45
+    ];
 
-    if (match) {
-      const timestamp = match[1];
-      const message = line.substring(match[0].length).trim();
-      
-      return {
-        timestamp,
-        message,
-        level: this.detectLogLevel(message),
-        service: this.detectService(message),
-        raw: line
-      };
+    let timestamp = null;
+    let message = line.trim();
+
+    for (const pattern of timestampPatterns) {
+      const match = line.match(pattern);
+      if (match) {
+        timestamp = match[1];
+        message = line.substring(match[0].length).trim();
+        break;
+      }
     }
 
-    // Handle lines without timestamps (continuation lines, etc.)
+    // If no timestamp found, treat as continuation line
+    if (!timestamp) {
+      timestamp = moment().format('YYYY-MM-DD HH:mm:ss');
+    }
+
+    const level = this.detectLogLevel(message);
+    const service = this.detectService(message);
+
     return {
-      timestamp: null,
-      message: line.trim(),
-      level: this.detectLogLevel(line),
-      service: 'UNKNOWN',
-      raw: line
+      id: `${lineNumber}-${timestamp}`,
+      lineNumber,
+      timestamp,
+      message,
+      level,
+      service,
+      raw: line,
+      isError: level === 'ERROR' || level === 'CRITICAL',
+      isWarning: level === 'WARNING'
     };
   }
 
   detectLogLevel(message) {
     const lowerMessage = message.toLowerCase();
     
-    if (config.errorDetection.criticalKeywords.some(keyword => lowerMessage.includes(keyword))) {
+    // Critical keywords (highest priority)
+    const criticalKeywords = ['fatal', 'critical', 'crash', 'abort', 'emergency', 'panic'];
+    if (criticalKeywords.some(keyword => lowerMessage.includes(keyword))) {
       return 'CRITICAL';
     }
     
-    if (config.errorDetection.keywords.some(keyword => lowerMessage.includes(keyword))) {
+    // Error keywords
+    const errorKeywords = ['error', 'failed', 'failure', 'exception', 'traceback', 'stderr'];
+    if (errorKeywords.some(keyword => lowerMessage.includes(keyword))) {
       return 'ERROR';
     }
 
-    if (lowerMessage.includes('warning') || lowerMessage.includes('warn')) {
+    // Warning keywords
+    const warningKeywords = ['warning', 'warn', 'deprecated', 'timeout', 'retry'];
+    if (warningKeywords.some(keyword => lowerMessage.includes(keyword))) {
       return 'WARNING';
     }
 
-    if (lowerMessage.includes('info') || lowerMessage.includes('starting') || lowerMessage.includes('success')) {
+    // Info keywords
+    const infoKeywords = ['info', 'starting', 'started', 'success', 'completed', 'finished'];
+    if (infoKeywords.some(keyword => lowerMessage.includes(keyword))) {
       return 'INFO';
     }
 
@@ -124,15 +153,19 @@ export class LogParserService {
   detectService(message) {
     const lowerMessage = message.toLowerCase();
     
-    if (lowerMessage.includes('frisk-api') || lowerMessage.includes('uvicorn') || lowerMessage.includes('ums') || lowerMessage.includes('fms') || lowerMessage.includes('dms')) {
+    if (lowerMessage.includes('frisk-api') || lowerMessage.includes('uvicorn') || 
+        lowerMessage.includes('ums') || lowerMessage.includes('fms') || 
+        lowerMessage.includes('dms') || lowerMessage.includes('fastapi')) {
       return 'API';
     }
     
-    if (lowerMessage.includes('frisk-ui') || lowerMessage.includes('next.js') || lowerMessage.includes('next')) {
+    if (lowerMessage.includes('frisk-ui') || lowerMessage.includes('next.js') || 
+        lowerMessage.includes('next') || lowerMessage.includes('react')) {
       return 'UI';
     }
     
-    if (lowerMessage.includes('notification') || lowerMessage.includes('pnpm')) {
+    if (lowerMessage.includes('notification') || lowerMessage.includes('pnpm') ||
+        lowerMessage.includes('frisk-notification')) {
       return 'NOTIFICATION';
     }
 
@@ -140,16 +173,13 @@ export class LogParserService {
   }
 
   getServiceConfig(serviceName) {
-    switch (serviceName.toLowerCase()) {
-      case 'api':
-        return config.friskit.services.api;
-      case 'ui':
-        return config.friskit.services.ui;
-      case 'notification':
-        return config.friskit.services.notification;
-      default:
-        return null;
-    }
+    const services = {
+      'api': config.friskit.services.api,
+      'ui': config.friskit.services.ui,
+      'notification': config.friskit.services.notification
+    };
+    
+    return services[serviceName.toLowerCase()] || null;
   }
 
   async getAvailableLogDates(serviceName) {
@@ -159,16 +189,80 @@ export class LogParserService {
         return [];
       }
 
+      // Check if directory exists
+      if (!await fs.pathExists(service.logPath)) {
+        console.warn(`Log directory not found: ${service.logPath}`);
+        return [];
+      }
+
       const files = await fs.readdir(service.logPath);
       const logFiles = files
         .filter(file => file.endsWith('.log'))
-        .map(file => file.replace('.log', ''))
-        .sort((a, b) => new Date(b) - new Date(a));
+        .map(file => {
+          const dateStr = file.replace('.log', '');
+          return {
+            date: dateStr,
+            filename: file,
+            isValid: moment(dateStr, 'YYYY-MM-DD').isValid()
+          };
+        })
+        .filter(item => item.isValid)
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
 
-      return logFiles;
+      return logFiles.map(item => item.date);
     } catch (error) {
       console.error('Error getting available log dates:', error);
       return [];
+    }
+  }
+
+  async searchLogs(serviceName, searchParams) {
+    try {
+      const { query, date, level, limit = 50 } = searchParams;
+      const logData = await this.getLogsByDate(serviceName, date);
+
+      if (!logData.exists) {
+        return {
+          service: serviceName,
+          date,
+          results: [],
+          message: 'No logs found for the specified date'
+        };
+      }
+
+      let results = [...logData.logs];
+
+      // Apply search query
+      if (query && query.trim()) {
+        const searchTerm = query.toLowerCase();
+        results = results.filter(log => 
+          log.message.toLowerCase().includes(searchTerm) ||
+          log.raw.toLowerCase().includes(searchTerm)
+        );
+      }
+
+      // Apply level filter
+      if (level && level !== 'ALL') {
+        results = results.filter(log => log.level === level.toUpperCase());
+      }
+
+      // Apply limit
+      if (limit > 0) {
+        results = results.slice(0, limit);
+      }
+
+      return {
+        service: serviceName,
+        date,
+        searchParams,
+        results,
+        resultCount: results.length,
+        totalLogs: logData.logs.length
+      };
+
+    } catch (error) {
+      console.error('Error searching logs:', error);
+      throw error;
     }
   }
 }
