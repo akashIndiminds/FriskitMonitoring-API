@@ -1,0 +1,31 @@
+{
+  "userAliases": {
+    "Imran": [
+      {
+        "aliasName": "API-Logs",
+        "basePath": "\\\\db-indiminds\\C\\Friskit\\BAT-Files\\latest\\logs\\Frisk-API",
+        "originalPath": "\\\\db-indiminds\\C\\Friskit\\BAT-Files\\latest\\logs\\Frisk-API",
+        "createdAt": "2025-09-01T11:20:34.289Z",
+        "lastAccessed": "2025-09-01T11:26:48.524Z",
+        "accessCount": 2
+      },
+      {
+        "aliasName": "Friskit-API-UI",
+        "basePath": "\\\\db-indiminds\\C\\Friskit\\BAT-Files\\latest\\logs\\Frisk-UI",
+        "originalPath": "\\\\db-indiminds\\C\\Friskit\\BAT-Files\\latest\\logs\\Frisk-UI",
+        "createdAt": "2025-09-01T11:21:09.355Z",
+        "lastAccessed": "2025-09-01T11:26:48.535Z",
+        "accessCount": 3
+      },
+      {
+        "aliasName": "UI-Logs",
+        "basePath": "\\\\db-indiminds\\C\\Friskit\\BAT-Files\\latest\\logs\\Frisk-UI",
+        "originalPath": "\\\\db-indiminds\\C\\Friskit\\BAT-Files\\latest\\logs\\Frisk-UI",
+        "createdAt": "2025-09-01T11:22:11.375Z",
+        "lastAccessed": "2025-09-01T11:26:48.541Z",
+        "accessCount": 1
+      }
+    ]
+  },
+  "lastSaved": "2025-09-01T11:26:48.541Z"
+}

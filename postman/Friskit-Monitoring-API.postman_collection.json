@@ -1,8 +1,8 @@
 {
   "info": {
-    "name": "Dynamic Log Analyzer API",
-    "description": "Complete API collection for Dynamic Log Analyzer - Universal log analysis system for network and local paths",
-    "version": "2.0.0",
+    "_postman_id": "12345678-1234-1234-1234-123456789012",
+    "name": "Friskit Monitoring API",
+    "description": "Raw path handling - no path manipulation",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -12,781 +12,219 @@
       "type": "string"
     },
     {
-      "key": "networkPath",
-      "value": "\\\\\\\\db-indiminds\\\\C\\\\Friskit\\\\BAT-Files\\\\latest\\\\logs\\\\Frisk-UI",
-      "type": "string"
-    },
-    {
-      "key": "localPath",
-      "value": "C:\\\\logs",
-      "type": "string"
-    },
-    {
-      "key": "fileName",
-      "value": "app.log",
+      "key": "userId",
+      "value": "john_doe",
       "type": "string"
     }
   ],
   "item": [
     {
-      "name": "🔧 Health & Info",
-      "item": [
-        {
-          "name": "Server Health Check",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/health",
-              "host": ["{{baseUrl}}"],
-              "path": ["health"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "API Information",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/info",
-              "host": ["{{baseUrl}}"],
-              "path": ["info"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Recent Paths Service Health",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/logs/recent/health",
-              "host": ["{{baseUrl}}"],
-              "path": ["logs", "recent", "health"]
-            }
-          },
-          "response": []
+      "name": "🏥 Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
         }
-      ]
+      }
     },
     {
-      "name": "📁 Core Log Operations",
-      "item": [
-        {
-          "name": "Read Log File - Network Path",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"filePath\": \"{{networkPath}}\",\n  \"fileName\": \"{{fileName}}\",\n  \"limit\": 100,\n  \"offset\": 0,\n  \"level\": \"ERROR\",\n  \"userInfo\": \"developer\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/logs/files",
-              "host": ["{{baseUrl}}"],
-              "path": ["logs", "files"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Read Log File - Local Path",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"filePath\": \"{{localPath}}\",\n  \"fileName\": \"{{fileName}}\",\n  \"limit\": 50,\n  \"offset\": 0,\n  \"userInfo\": \"admin\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/logs/files",
-              "host": ["{{baseUrl}}"],
-              "path": ["logs", "files"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Browse Directory Files",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"directoryPath\": \"{{networkPath}}\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/logs/directory",
-              "host": ["{{baseUrl}}"],
-              "path": ["logs", "directory"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Search in Logs",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"filePath\": \"{{networkPath}}\",\n  \"fileName\": \"{{fileName}}\",\n  \"searchQuery\": \"error\",\n  \"level\": \"ERROR\",\n  \"limit\": 100,\n  \"caseSensitive\": false\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/logs/search",
-              "host": ["{{baseUrl}}"],
-              "path": ["logs", "search"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Get File Statistics",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"filePath\": \"{{networkPath}}\",\n  \"fileName\": \"{{fileName}}\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/logs/stats",
-              "host": ["{{baseUrl}}"],
-              "path": ["logs", "stats"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Get Latest Logs (Real-time)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"filePath\": \"{{networkPath}}\",\n  \"fileName\": \"{{fileName}}\",\n  \"lastTimestamp\": \"2025-09-01T10:30:00\",\n  \"limit\": 50\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/logs/latest",
-              "host": ["{{baseUrl}}"],
-              "path": ["logs", "latest"]
-            }
-          },
-          "response": []
+      "name": "📋 API Info",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/info",
+          "host": ["{{baseUrl}}"],
+          "path": ["info"]
         }
-      ]
+      }
     },
     {
-      "name": "📅 Date-Based Operations",
-      "item": [
-        {
-          "name": "Get Logs by Specific Date",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"directoryPath\": \"{{networkPath}}\",\n  \"date\": \"2025-09-01\",\n  \"limit\": 100,\n  \"offset\": 0,\n  \"level\": \"ERROR\",\n  \"userInfo\": \"developer\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/logs/by-date",
-              "host": ["{{baseUrl}}"],
-              "path": ["logs", "by-date"]
-            }
-          },
-          "response": []
+      "name": "➕ Create API Logs Alias",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"aliasName\": \"API-Logs\",\n  \"basePath\": \"\\\\\\\\db-indiminds\\\\C\\\\Friskit\\\\BAT-Files\\\\latest\\\\logs\\\\Frisk-API\"\n}"
         },
-        {
-          "name": "Get Available Dates in Directory",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"directoryPath\": \"{{networkPath}}\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/logs/available-dates",
-              "host": ["{{baseUrl}}"],
-              "path": ["logs", "available-dates"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Get Logs by Date Range",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"directoryPath\": \"{{networkPath}}\",\n  \"startDate\": \"2025-09-01\",\n  \"endDate\": \"2025-09-05\",\n  \"limit\": 500,\n  \"level\": \"ERROR\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/logs/date-range",
-              "host": ["{{baseUrl}}"],
-              "path": ["logs", "date-range"]
-            }
-          },
-          "response": []
+        "url": {
+          "raw": "{{baseUrl}}/alias-logs/alias",
+          "host": ["{{baseUrl}}"],
+          "path": ["alias-logs", "alias"]
         }
-      ]
+      }
     },
     {
-      "name": "💾 Recent Paths Management",
-      "item": [
-        {
-          "name": "Get Recent Paths (✅ Fixed)",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/logs/recent",
-              "host": ["{{baseUrl}}"],
-              "path": ["logs", "recent"]
-            }
-          },
-          "response": []
+      "name": "➕ Create UI Logs Alias",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"aliasName\": \"UI-Logs\",\n  \"basePath\": \"\\\\\\\\db-indiminds\\\\C\\\\Friskit\\\\BAT-Files\\\\latest\\\\logs\\\\Frisk-UI\"\n}"
         },
-        {
-          "name": "Get Popular Paths",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/logs/popular",
-              "host": ["{{baseUrl}}"],
-              "path": ["logs", "popular"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Get Path History",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/logs/history",
-              "host": ["{{baseUrl}}"],
-              "path": ["logs", "history"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Search Recent Paths",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/logs/search-recent?query=frisk",
-              "host": ["{{baseUrl}}"],
-              "path": ["logs", "search-recent"],
-              "query": [
-                {
-                  "key": "query",
-                  "value": "frisk"
-                }
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Clear All Recent Paths",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/logs/recent",
-              "host": ["{{baseUrl}}"],
-              "path": ["logs", "recent"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Remove Specific Recent Path",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/logs/recent/{{networkPath}}\\\\{{fileName}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["logs", "recent", "{{networkPath}}\\\\{{fileName}}"]
-            }
-          },
-          "response": []
+        "url": {
+          "raw": "{{baseUrl}}/alias-logs/alias",
+          "host": ["{{baseUrl}}"],
+          "path": ["alias-logs", "alias"]
         }
-      ]
+      }
     },
     {
-      "name": "🔍 Storage Management & Debugging",
-      "item": [
-        {
-          "name": "Get Storage Statistics",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/logs/storage/stats",
-              "host": ["{{baseUrl}}"],
-              "path": ["logs", "storage", "stats"]
-            }
-          },
-          "response": []
+      "name": "➕ Create Adapter Logs Alias",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"aliasName\": \"Adapter-Logs\",\n  \"basePath\": \"\\\\\\\\db-indiminds\\\\C\\\\Friskit\\\\BAT-Files\\\\latest\\\\logs\\\\Frisk-Adapter\"\n}"
         },
-        {
-          "name": "📁 View JSON Storage File Contents",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/logs/storage/contents",
-              "host": ["{{baseUrl}}"],
-              "path": ["logs", "storage", "contents"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Create Storage Backup",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/logs/storage/backup",
-              "host": ["{{baseUrl}}"],
-              "path": ["logs", "storage", "backup"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Cleanup Old Entries (30 days)",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/logs/storage/cleanup?days=30",
-              "host": ["{{baseUrl}}"],
-              "path": ["logs", "storage", "cleanup"],
-              "query": [
-                {
-                  "key": "days",
-                  "value": "30"
-                }
-              ]
-            }
-          },
-          "response": []
+        "url": {
+          "raw": "{{baseUrl}}/alias-logs/alias",
+          "host": ["{{baseUrl}}"],
+          "path": ["alias-logs", "alias"]
         }
-      ]
+      }
     },
     {
-      "name": "🧪 Testing Workflows",
-      "item": [
-        {
-          "name": "🔄 Complete Test Workflow",
-          "item": [
+      "name": "📋 Get User Aliases",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/alias-logs/user/{{userId}}/aliases",
+          "host": ["{{baseUrl}}"],
+          "path": ["alias-logs", "user", "{{userId}}", "aliases"]
+        }
+      }
+    },
+    {
+      "name": "📊 Get API Logs (Today)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/alias-logs/user/{{userId}}/alias/API-Logs",
+          "host": ["{{baseUrl}}"],
+          "path": ["alias-logs", "user", "{{userId}}", "alias", "API-Logs"]
+        }
+      }
+    },
+    {
+      "name": "📊 Get UI Logs (Today)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/alias-logs/user/{{userId}}/alias/UI-Logs",
+          "host": ["{{baseUrl}}"],
+          "path": ["alias-logs", "user", "{{userId}}", "alias", "UI-Logs"]
+        }
+      }
+    },
+    {
+      "name": "📊 Get Adapter Logs (Today)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/alias-logs/user/{{userId}}/alias/Adapter-Logs",
+          "host": ["{{baseUrl}}"],
+          "path": ["alias-logs", "user", "{{userId}}", "alias", "Adapter-Logs"]
+        }
+      }
+    },
+    {
+      "name": "📊 Get Specific Date Logs",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/alias-logs/user/{{userId}}/alias/API-Logs?date=2025-09-01",
+          "host": ["{{baseUrl}}"],
+          "path": ["alias-logs", "user", "{{userId}}", "alias", "API-Logs"],
+          "query": [
             {
-              "name": "1. Health Check",
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{baseUrl}}/health",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["health"]
-                }
-              }
-            },
-            {
-              "name": "2. Check Recent Paths (Initially Empty)",
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{baseUrl}}/logs/recent",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["logs", "recent"]
-                }
-              }
-            },
-            {
-              "name": "3. Read Log File (This Stores Path)",
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"filePath\": \"C:\\\\Windows\\\\System32\\\\LogFiles\",\n  \"fileName\": \"httperr1.log\",\n  \"limit\": 10,\n  \"userInfo\": \"test-user\"\n}"
-                },
-                "url": {
-                  "raw": "{{baseUrl}}/logs/files",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["logs", "files"]
-                }
-              }
-            },
-            {
-              "name": "4. Check Recent Paths Again (Should Have Data)",
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{baseUrl}}/logs/recent",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["logs", "recent"]
-                }
-              }
-            },
-            {
-              "name": "5. View Storage File Contents",
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{baseUrl}}/logs/storage/contents",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["logs", "storage", "contents"]
-                }
-              }
-            }
-          ]
-        },
-        {
-          "name": "🌐 Network Path Test",
-          "item": [
-            {
-              "name": "Test Frisk UI Logs",
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"filePath\": \"\\\\\\\\db-indiminds\\\\C\\\\Friskit\\\\BAT-Files\\\\latest\\\\logs\\\\Frisk-UI\",\n  \"fileName\": \"app.log\",\n  \"limit\": 20,\n  \"userInfo\": \"frisk-developer\"\n}"
-                },
-                "url": {
-                  "raw": "{{baseUrl}}/logs/files",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["logs", "files"]
-                }
-              }
-            },
-            {
-              "name": "Test Frisk API Logs",
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"filePath\": \"\\\\\\\\db-indiminds\\\\C\\\\Friskit\\\\BAT-Files\\\\latest\\\\logs\\\\Frisk-API\",\n  \"fileName\": \"api.log\",\n  \"limit\": 20,\n  \"userInfo\": \"frisk-developer\"\n}"
-                },
-                "url": {
-                  "raw": "{{baseUrl}}/logs/files",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["logs", "files"]
-                }
-              }
-            },
-            {
-              "name": "Browse Frisk Log Directory",
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"directoryPath\": \"\\\\\\\\db-indiminds\\\\C\\\\Friskit\\\\BAT-Files\\\\latest\\\\logs\"\n}"
-                },
-                "url": {
-                  "raw": "{{baseUrl}}/logs/directory",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["logs", "directory"]
-                }
-              }
-            }
-          ]
-        },
-        {
-          "name": "🔍 Error Analysis Test",
-          "item": [
-            {
-              "name": "Search for Exceptions",
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"filePath\": \"{{networkPath}}\",\n  \"fileName\": \"{{fileName}}\",\n  \"searchQuery\": \"exception\",\n  \"level\": \"ERROR\",\n  \"limit\": 50\n}"
-                },
-                "url": {
-                  "raw": "{{baseUrl}}/logs/search",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["logs", "search"]
-                }
-              }
-            },
-            {
-              "name": "Search for Timeouts",
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"filePath\": \"{{networkPath}}\",\n  \"fileName\": \"{{fileName}}\",\n  \"searchQuery\": \"timeout\",\n  \"level\": \"WARNING\",\n  \"caseSensitive\": false\n}"
-                },
-                "url": {
-                  "raw": "{{baseUrl}}/logs/search",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["logs", "search"]
-                }
-              }
-            },
-            {
-              "name": "Get Error Statistics",
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"filePath\": \"{{networkPath}}\",\n  \"fileName\": \"{{fileName}}\"\n}"
-                },
-                "url": {
-                  "raw": "{{baseUrl}}/logs/stats",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["logs", "stats"]
-                }
-              }
+              "key": "date",
+              "value": "2025-09-01",
+              "description": "YYYY-MM-DD format"
             }
           ]
         }
-      ]
+      }
     },
     {
-      "name": "📊 Advanced Use Cases",
-      "item": [
-        {
-          "name": "Monitor Live Logs",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"filePath\": \"{{networkPath}}\",\n  \"fileName\": \"{{fileName}}\",\n  \"lastTimestamp\": \"{{$timestamp}}\",\n  \"limit\": 25\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/logs/latest",
-              "host": ["{{baseUrl}}"],
-              "path": ["logs", "latest"]
-            }
-          }
-        },
-        {
-          "name": "Get Today's Logs",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"directoryPath\": \"{{networkPath}}\",\n  \"date\": \"{{$isoTimestamp}}\",\n  \"limit\": 200\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/logs/by-date",
-              "host": ["{{baseUrl}}"],
-              "path": ["logs", "by-date"]
-            }
-          }
-        },
-        {
-          "name": "Weekly Log Analysis",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"directoryPath\": \"{{networkPath}}\",\n  \"startDate\": \"2025-08-25\",\n  \"endDate\": \"2025-09-01\",\n  \"limit\": 1000,\n  \"level\": \"ERROR\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/logs/date-range",
-              "host": ["{{baseUrl}}"],
-              "path": ["logs", "date-range"]
-            }
-          }
-        },
-        {
-          "name": "Critical Error Search",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"filePath\": \"{{networkPath}}\",\n  \"fileName\": \"{{fileName}}\",\n  \"searchQuery\": \"critical|fatal|crash\",\n  \"limit\": 100,\n  \"caseSensitive\": false\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/logs/search",
-              "host": ["{{baseUrl}}"],
-              "path": ["logs", "search"]
-            }
-          }
+      "name": "🌐 Get All User Logs (Polling)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/alias-logs/user/{{userId}}/all",
+          "host": ["{{baseUrl}}"],
+          "path": ["alias-logs", "user", "{{userId}}", "all"]
         }
-      ]
+      }
+    },
+    {
+      "name": "🗑️ Delete Alias",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/alias-logs/user/{{userId}}/alias/API-Logs",
+          "host": ["{{baseUrl}}"],
+          "path": ["alias-logs", "user", "{{userId}}", "alias", "API-Logs"]
+        }
+      }
+    },
+    {
+      "name": "👥 Get All Users (Admin)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/alias-logs/admin/users",
+          "host": ["{{baseUrl}}"],
+          "path": ["alias-logs", "admin", "users"]
+        }
+      }
     }
   ],
   "event": [
     {
-      "listen": "prerequest",
-      "script": {
-        "type": "text/javascript",
-        "exec": [
-          "// Auto-generate current timestamp for date-based requests",
-          "pm.globals.set('currentDate', new Date().toISOString().split('T')[0]);",
-          "",
-          "// Set common headers",
-          "pm.request.headers.add({",
-          "  key: 'User-Agent',",
-          "  value: 'Dynamic-Log-Analyzer-Postman/2.0.0'",
-          "});"
-        ]
-      }
-    },
-    {
       "listen": "test",
       "script": {
-        "type": "text/javascript",
         "exec": [
-          "// Common test for all requests",
-          "pm.test('Response time is reasonable', function () {",
-          "  pm.expect(pm.response.responseTime).to.be.below(10000);",
+          "// Basic response validation",
+          "pm.test(\"Response should be JSON\", function () {",
+          "    pm.response.to.be.json;",
           "});",
           "",
-          "pm.test('Content-Type is JSON', function () {",
-          "  pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
-          "});",
-          "",
-          "// Test success responses",
-          "if (pm.response.code === 200) {",
-          "  pm.test('Success response format', function () {",
-          "    const jsonData = pm.response.json();",
-          "    pm.expect(jsonData).to.have.property('success', true);",
-          "    pm.expect(jsonData).to.have.property('timestamp');",
-          "  });",
-          "}",
-          "",
-          "// Test error responses  ",
-          "if (pm.response.code >= 400) {",
-          "  pm.test('Error response format', function () {",
-          "    const jsonData = pm.response.json();",
-          "    pm.expect(jsonData).to.have.property('success', false);",
-          "    pm.expect(jsonData).to.have.property('error');",
-          "    pm.expect(jsonData).to.have.property('timestamp');",
-          "  });",
-          "}"
-        ]
+          "pm.test(\"Response should have success field\", function () {",
+          "    var jsonData = pm.response.json();",
+          "    pm.expect(jsonData).to.have.property('success');",
+          "});"
+        ],
+        "type": "text/javascript"
       }
     }
   ]

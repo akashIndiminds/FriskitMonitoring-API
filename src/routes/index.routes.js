@@ -1,44 +1,60 @@
-// src/routes/index.routes.js
+// src/routes/index.routes.js - UPDATED VERSION
 // ==========================================
 import express from 'express';
-import dynamicLogsRoutes from './dynamicLogs.routes.js';
+import aliasLogsRoutes from './aliasLogs.routes.js';  // 🆕 NEW
 
 const router = express.Router();
 
-router.use('/logs', dynamicLogsRoutes);
+// 🆕 NEW: Alias-based logs routes
+router.use('/alias-logs', aliasLogsRoutes);
 
+// Health check endpoint
 router.get('/health', (req, res) => {
   res.json({
     status: 'OK',
-    service: 'Dynamic Log Analyzer',
+    service: 'Simple Log Analyzer',
     timestamp: new Date().toISOString(),
     version: '2.0.0',
     uptime: process.uptime()
   });
 });
 
+// API info endpoint
 router.get('/info', (req, res) => {
   res.json({
-    name: 'Dynamic Log Analyzer API',
+    name: 'Simple Alias-Based Log Analyzer',
     version: '2.0.0',
-    description: 'Universal log analysis system for any file path',
+    description: 'Simple log analysis system with user aliases',
     features: [
-      'Dynamic file path support',
-      'Multi-format log parsing (.log, .txt, .out, .err)',
-      'Advanced log searching and filtering',
-      'Statistical analysis and insights',
-      'File directory browsing'
+      'User-based aliases',
+      'Date-based file finding',
+      'Raw log content display',
+      'File-separated responses',
+      'JSON storage (no database)'
     ],
     endpoints: {
-      files: 'POST /api/logs/files',
-      directory: 'POST /api/logs/directory',
-      search: 'POST /api/logs/search',
-      stats: 'POST /api/logs/stats'
+      createAlias: 'POST /api/alias-logs/alias',
+      getLogs: 'GET /api/alias-logs/user/{userId}/alias/{aliasName}',
+      getAllUserLogs: 'GET /api/alias-logs/user/{userId}/all',
+      getUserAliases: 'GET /api/alias-logs/user/{userId}/aliases'
     },
-    limits: {
-      maxFileSize: '100MB',
-      maxRequestRate: '200 per 15 minutes',
-      maxResultLimit: '10,000 lines'
+    examples: {
+      createAlias: {
+        method: 'POST',
+        url: '/api/alias-logs/alias',
+        body: {
+          userId: 'john_doe',
+          aliasName: 'MyLogs',
+          basePath: '\\\\\\\\server\\\\logs\\\\folder'
+        }
+      },
+      getLogs: {
+        method: 'GET',
+        url: '/api/alias-logs/user/john_doe/alias/MyLogs',
+        queryParams: {
+          date: '2025-09-01 (optional, defaults to today)'
+        }
+      }
     }
   });
 });
