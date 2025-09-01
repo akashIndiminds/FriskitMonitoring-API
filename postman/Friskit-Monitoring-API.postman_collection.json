@@ -1,452 +1,671 @@
 {
   "info": {
-    "name": "Friskit Monitoring API v2.0",
-    "description": "Complete API collection for Friskit Error Monitoring System - Updated Version",
-    "version": "2.0.0",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    "name": "Dynamic Log Analyzer API - Complete Collection",
+    "description": "Universal log analysis with date-based filtering for Friskit services",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "2.1.0"
   },
   "variable": [
     {
-      "key": "base_url",
+      "key": "baseUrl",
       "value": "http://localhost:5000",
-      "description": "Base URL for the API"
+      "type": "string"
+    },
+    {
+      "key": "networkPath",
+      "value": "\\\\\\\\db-indiminds\\\\C\\\\Friskit\\\\BAT-Files\\\\latest\\\\logs",
+      "type": "string"
+    },
+    {
+      "key": "currentDate",
+      "value": "2025-09-01",
+      "type": "string"
     }
   ],
   "item": [
     {
-      "name": "Health & Status",
-      "description": "System health and service status endpoints",
+      "name": "System Health",
       "item": [
+        {
+          "name": "Root - API Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            }
+          }
+        },
         {
           "name": "Health Check",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{base_url}}/health",
-            "description": "Check if the API server is running"
+            "url": {
+              "raw": "{{baseUrl}}/api/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "health"]
+            }
           }
         },
         {
-          "name": "API Documentation",
+          "name": "API Info",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{base_url}}/api",
-            "description": "Get API documentation and available endpoints"
+            "url": {
+              "raw": "{{baseUrl}}/api/info",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "info"]
+            }
           }
         }
       ]
     },
     {
-      "name": "Logs Management",
-      "description": "Log retrieval and search endpoints",
+      "name": "Date-Based Log Operations (NEW)",
       "item": [
         {
-          "name": "Get Available Dates - API Service",
+          "name": "Get Today's Logs (Frisk-UI)",
           "request": {
-            "method": "GET",
-            "header": [],
-            "url": "{{base_url}}/api/logs/api/dates",
-            "description": "Get all available log dates for API service"
-          }
-        },
-        {
-          "name": "Get Available Dates - UI Service",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": "{{base_url}}/api/logs/ui/dates",
-            "description": "Get all available log dates for UI service"
-          }
-        },
-        {
-          "name": "Get Available Dates - Notification Service",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": "{{base_url}}/api/logs/notification/dates",
-            "description": "Get all available log dates for Notification service"
-          }
-        },
-        {
-          "name": "Get Today's Logs - API Service",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/logs/api/date/today?limit=100&offset=0",
-              "host": ["{{base_url}}"],
-              "path": ["api", "logs", "api", "date", "today"],
-              "query": [
-                {
-                  "key": "limit",
-                  "value": "100",
-                  "description": "Number of logs to return (default: 100)"
-                },
-                {
-                  "key": "offset",
-                  "value": "0",
-                  "description": "Starting position (default: 0)"
-                },
-                {
-                  "key": "level",
-                  "value": "ERROR",
-                  "description": "Filter by log level: CRITICAL, ERROR, WARNING, INFO, DEBUG",
-                  "disabled": true
-                }
-              ]
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"directoryPath\": \"{{networkPath}}\\\\Frisk-UI\",\n  \"limit\": 100\n}"
             },
-            "description": "Get today's logs for API service"
+            "url": {
+              "raw": "{{baseUrl}}/api/logs/by-date",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "logs", "by-date"]
+            }
           }
         },
         {
-          "name": "Get Logs by Date - UI Service",
+          "name": "Get Logs by Specific Date (Frisk-API)",
           "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/logs/ui/date/2025-08-30?limit=50&level=WARNING",
-              "host": ["{{base_url}}"],
-              "path": ["api", "logs", "ui", "date", "2025-08-30"],
-              "query": [
-                {
-                  "key": "limit",
-                  "value": "50"
-                },
-                {
-                  "key": "level",
-                  "value": "WARNING"
-                }
-              ]
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"directoryPath\": \"{{networkPath}}\\\\Frisk-API\",\n  \"date\": \"{{currentDate}}\",\n  \"limit\": 50,\n  \"level\": \"ERROR\"\n}"
             },
-            "description": "Get logs for a specific date with filters"
+            "url": {
+              "raw": "{{baseUrl}}/api/logs/by-date",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "logs", "by-date"]
+            }
           }
         },
         {
-          "name": "Get Latest Logs - Notification Service",
+          "name": "Get Available Dates (Frisk-UI)",
           "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/logs/notification/latest?limit=25",
-              "host": ["{{base_url}}"],
-              "path": ["api", "logs", "notification", "latest"],
-              "query": [
-                {
-                  "key": "limit",
-                  "value": "25",
-                  "description": "Number of latest logs to return"
-                }
-              ]
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"directoryPath\": \"{{networkPath}}\\\\Frisk-UI\"\n}"
             },
-            "description": "Get latest logs (today's logs)"
+            "url": {
+              "raw": "{{baseUrl}}/api/logs/available-dates",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "logs", "available-dates"]
+            }
           }
         },
         {
-          "name": "Search Logs - API Service",
+          "name": "Get Available Dates (Frisk-API)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"directoryPath\": \"{{networkPath}}\\\\Frisk-API\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/logs/available-dates",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "logs", "available-dates"]
+            }
+          }
+        },
+        {
+          "name": "Get Date Range Logs (Last 7 Days)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"directoryPath\": \"{{networkPath}}\\\\Frisk-UI\",\n  \"startDate\": \"2025-08-25\",\n  \"endDate\": \"2025-09-01\",\n  \"limit\": 200,\n  \"level\": \"ERROR\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/logs/date-range",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "logs", "date-range"]
+            }
+          }
+        },
+        {
+          "name": "Get Yesterday's Logs",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"directoryPath\": \"{{networkPath}}\\\\Frisk-API\",\n  \"date\": \"2025-08-31\",\n  \"limit\": 100\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/logs/by-date",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "logs", "by-date"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "All Friskit Services - Date Based",
+      "item": [
+        {
+          "name": "Frisk-API Today's Logs",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"directoryPath\": \"{{networkPath}}\\\\Frisk-API\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/logs/by-date",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "logs", "by-date"]
+            }
+          }
+        },
+        {
+          "name": "Frisk-UI Today's Logs",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"directoryPath\": \"{{networkPath}}\\\\Frisk-UI\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/logs/by-date",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "logs", "by-date"]
+            }
+          }
+        },
+        {
+          "name": "Frisk-Adapter Today's Logs",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"directoryPath\": \"{{networkPath}}\\\\Frisk-Adapter\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/logs/by-date",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "logs", "by-date"]
+            }
+          }
+        },
+        {
+          "name": "Frisk-FTP Today's Logs",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"directoryPath\": \"{{networkPath}}\\\\Frisk-FTP-Automation\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/logs/by-date",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "logs", "by-date"]
+            }
+          }
+        },
+        {
+          "name": "Frisk-Notification Today's Logs",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"directoryPath\": \"{{networkPath}}\\\\Frisk-Notification-Service\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/logs/by-date",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "logs", "by-date"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Traditional Log Operations",
+      "item": [
+        {
+          "name": "Get Logs by File Name",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"filePath\": \"{{networkPath}}\\\\Frisk-API\",\n  \"fileName\": \"Friskit_API-Logs\",\n  \"limit\": 100,\n  \"offset\": 0,\n  \"level\": \"ERROR\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/logs/files",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "logs", "files"]
+            }
+          }
+        },
+        {
+          "name": "Get Latest File in Directory",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"filePath\": \"{{networkPath}}\\\\Frisk-UI\",\n  \"limit\": 50\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/logs/files",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "logs", "files"]
+            }
+          }
+        },
+        {
+          "name": "Browse Directory Files",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"directoryPath\": \"{{networkPath}}\\\\Frisk-API\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/logs/directory",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "logs", "directory"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Search Operations",
+      "item": [
+        {
+          "name": "Search for Errors Today",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"filePath\": \"{{networkPath}}\\\\Frisk-API\",\n  \"fileName\": \"app.log\",\n  \"searchQuery\": \"error\",\n  \"limit\": 50\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/logs/search",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "logs", "search"]
+            }
+          }
+        },
+        {
+          "name": "Search for Connection Issues",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"filePath\": \"{{networkPath}}\\\\Frisk-UI\",\n  \"fileName\": \"ui.log\",\n  \"searchQuery\": \"connection\",\n  \"level\": \"ERROR\",\n  \"caseSensitive\": false,\n  \"limit\": 25\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/logs/search",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "logs", "search"]
+            }
+          }
+        },
+        {
+          "name": "Search Failed Operations",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"filePath\": \"{{networkPath}}\\\\Frisk-FTP-Automation\",\n  \"fileName\": \"ftp.log\",\n  \"searchQuery\": \"failed\",\n  \"caseSensitive\": false,\n  \"limit\": 30\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/logs/search",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "logs", "search"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Statistics & Analysis",
+      "item": [
+        {
+          "name": "Get File Statistics",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"filePath\": \"{{networkPath}}\\\\Frisk-API\",\n  \"fileName\": \"app.log\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/logs/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "logs", "stats"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Real-Time Operations",
+      "item": [
+        {
+          "name": "Get Latest Logs (Real-time)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"filePath\": \"{{networkPath}}\\\\Frisk-API\",\n  \"fileName\": \"app.log\",\n  \"lastTimestamp\": \"2025-09-01T10:00:00Z\",\n  \"limit\": 20\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/logs/latest",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "logs", "latest"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Recent Paths Management",
+      "item": [
+        {
+          "name": "Get Recent Paths",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/logs/api/search?query=error&date=2025-08-30&level=ERROR&limit=20",
-              "host": ["{{base_url}}"],
-              "path": ["api", "logs", "api", "search"],
+              "raw": "{{baseUrl}}/api/logs/recent",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "logs", "recent"]
+            }
+          }
+        },
+        {
+          "name": "Get Popular Paths",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/logs/popular",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "logs", "popular"]
+            }
+          }
+        },
+        {
+          "name": "Search Recent Paths",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/logs/search-recent?query=Frisk-API",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "logs", "search-recent"],
               "query": [
                 {
                   "key": "query",
-                  "value": "error",
-                  "description": "Search term to look for in log messages"
-                },
-                {
-                  "key": "date",
-                  "value": "2025-08-30",
-                  "description": "Date to search (YYYY-MM-DD format)"
-                },
-                {
-                  "key": "level",
-                  "value": "ERROR",
-                  "description": "Filter by log level"
-                },
-                {
-                  "key": "limit",
-                  "value": "20",
-                  "description": "Maximum number of results"
+                  "value": "Frisk-API"
                 }
               ]
-            },
-            "description": "Search logs with multiple filters"
-          }
-        }
-      ]
-    },
-    {
-      "name": "Error Analysis",
-      "description": "Error analysis and monitoring endpoints",
-      "item": [
-        {
-          "name": "Analyze Errors - API Service",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/analysis/api/errors?date=2025-08-30",
-              "host": ["{{base_url}}"],
-              "path": ["api", "analysis", "api", "errors"],
-              "query": [
-                {
-                  "key": "date",
-                  "value": "2025-08-30",
-                  "description": "Date to analyze (YYYY-MM-DD) - defaults to today"
-                }
-              ]
-            },
-            "description": "Get detailed error analysis with solutions"
-          }
-        },
-        {
-          "name": "Analyze Errors - UI Service",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": "{{base_url}}/api/analysis/ui/errors",
-            "description": "Analyze errors for UI service (today)"
-          }
-        },
-        {
-          "name": "Analyze Errors - Notification Service",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": "{{base_url}}/api/analysis/notification/errors",
-            "description": "Analyze errors for Notification service"
-          }
-        },
-        {
-          "name": "Get Error Trends - API Service",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/analysis/api/trends?days=7",
-              "host": ["{{base_url}}"],
-              "path": ["api", "analysis", "api", "trends"],
-              "query": [
-                {
-                  "key": "days",
-                  "value": "7",
-                  "description": "Number of days to analyze (1-30, default: 7)"
-                }
-              ]
-            },
-            "description": "Get error trends over time for API service"
-          }
-        },
-        {
-          "name": "Get Error Trends - UI Service",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/analysis/ui/trends?days=14",
-              "host": ["{{base_url}}"],
-              "path": ["api", "analysis", "ui", "trends"],
-              "query": [
-                {
-                  "key": "days",
-                  "value": "14"
-                }
-              ]
-            },
-            "description": "Get 14-day error trends for UI service"
-          }
-        },
-        {
-          "name": "Get Critical Errors - API Service",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/analysis/api/critical?date=2025-08-30&limit=10",
-              "host": ["{{base_url}}"],
-              "path": ["api", "analysis", "api", "critical"],
-              "query": [
-                {
-                  "key": "date",
-                  "value": "2025-08-30",
-                  "description": "Date to analyze (defaults to today)"
-                },
-                {
-                  "key": "limit",
-                  "value": "10",
-                  "description": "Maximum number of critical errors to return"
-                }
-              ]
-            },
-            "description": "Get only critical errors with immediate solutions"
-          }
-        },
-        {
-          "name": "Get Critical Errors - Notification Service",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": "{{base_url}}/api/analysis/notification/critical",
-            "description": "Get critical errors for Notification service"
-          }
-        },
-        {
-          "name": "System Health Overview",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": "{{base_url}}/api/analysis/health",
-            "description": "Get overall system health status for all services"
-          }
-        }
-      ]
-    },
-    {
-      "name": "Services Management",
-      "description": "Service status and configuration endpoints",
-      "item": [
-        {
-          "name": "Get All Services Status",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": "{{base_url}}/api/services/status",
-            "description": "Get status of all Friskit services"
-          }
-        },
-        {
-          "name": "Get API Service Details",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": "{{base_url}}/api/services/api/details",
-            "description": "Get detailed information about API service"
-          }
-        },
-        {
-          "name": "Get UI Service Details",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": "{{base_url}}/api/services/ui/details",
-            "description": "Get detailed information about UI service"
-          }
-        },
-        {
-          "name": "Get Notification Service Details",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": "{{base_url}}/api/services/notification/details",
-            "description": "Get detailed information about Notification service"
-          }
-        }
-      ]
-    },
-    {
-      "name": "Sample Workflows",
-      "description": "Common API usage patterns",
-      "item": [
-        {
-          "name": "Daily Health Check Workflow",
-          "item": [
-            {
-              "name": "1. Check System Health",
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": "{{base_url}}/api/analysis/health",
-                "description": "Start with overall system health"
-              }
-            },
-            {
-              "name": "2. Get Today's API Logs",
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": "{{base_url}}/api/logs/api/date/today",
-                "description": "Check API service logs for today"
-              }
-            },
-            {
-              "name": "3. Analyze API Errors",
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": "{{base_url}}/api/analysis/api/errors",
-                "description": "Get error analysis with solutions"
-              }
             }
-          ]
+          }
         },
         {
-          "name": "Troubleshooting Workflow",
-          "item": [
-            {
-              "name": "1. Search for Specific Error",
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{base_url}}/api/logs/api/search?query=connection failed&date=2025-08-30",
-                  "host": ["{{base_url}}"],
-                  "path": ["api", "logs", "api", "search"],
-                  "query": [
-                    {
-                      "key": "query",
-                      "value": "connection failed"
-                    },
-                    {
-                      "key": "date",
-                      "value": "2025-08-30"
-                    }
-                  ]
-                },
-                "description": "Search for specific error patterns"
-              }
-            },
-            {
-              "name": "2. Get Critical Errors Only",
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": "{{base_url}}/api/analysis/api/critical",
-                "description": "Focus on critical issues first"
-              }
-            },
-            {
-              "name": "3. Check Error Trends",
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": "{{base_url}}/api/analysis/api/trends?days=7",
-                "description": "See if this is a recurring issue"
-              }
+          "name": "Clear Recent Paths",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/logs/recent",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "logs", "recent"]
             }
-          ]
+          }
         }
       ]
-    }
-  ],
-  "event": [
+    },
     {
-      "listen": "prerequest",
-      "script": {
-        "type": "text/javascript",
-        "exec": [
-          "// Set current date for dynamic requests",
-          "pm.globals.set('current_date', new Date().toISOString().split('T')[0]);",
-          "",
-          "// Set yesterday's date",
-          "const yesterday = new Date();",
-          "yesterday.setDate(yesterday.getDate() - 1);",
-          "pm.globals.set('yesterday_date', yesterday.toISOString().split('T')[0]);"
-        ]
-      }
+      "name": "Local System Testing",
+      "item": [
+        {
+          "name": "Local Directory Browse",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"directoryPath\": \"C:\\\\logs\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/logs/directory",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "logs", "directory"]
+            }
+          }
+        },
+        {
+          "name": "Local File by Date",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"directoryPath\": \"C:\\\\logs\",\n  \"date\": \"2025-09-01\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/logs/by-date",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "logs", "by-date"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Error Testing",
+      "item": [
+        {
+          "name": "Invalid Network Path",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"directoryPath\": \"\\\\\\\\invalid-server\\\\invalid\\\\path\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/logs/by-date",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "logs", "by-date"]
+            }
+          }
+        },
+        {
+          "name": "Invalid Date Format",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"directoryPath\": \"{{networkPath}}\\\\Frisk-API\",\n  \"date\": \"invalid-date\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/logs/by-date",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "logs", "by-date"]
+            }
+          }
+        },
+        {
+          "name": "Missing Directory Path",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"date\": \"2025-09-01\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/logs/by-date",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "logs", "by-date"]
+            }
+          }
+        }
+      ]
     }
   ]
 }
