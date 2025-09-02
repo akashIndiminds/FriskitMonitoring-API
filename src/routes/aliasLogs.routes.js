@@ -8,7 +8,7 @@ import {
   getUserAliases,
   deleteAlias,
   getAllUsers
-} from '../controllers/aliasLogs.controller.js';
+} from '../controllers/users.controller.js';
 
 const router = express.Router();
 

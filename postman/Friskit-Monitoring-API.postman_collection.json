@@ -1,8 +1,8 @@
 {
   "info": {
-    "_postman_id": "12345678-1234-1234-1234-123456789012",
     "name": "Friskit Monitoring API",
-    "description": "Raw path handling - no path manipulation",
+    "description": "Complete API collection for Multi-User Log Dashboard with examples",
+    "version": "3.0.0",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -12,219 +12,757 @@
       "type": "string"
     },
     {
-      "key": "userId",
-      "value": "john_doe",
+      "key": "currentDate",
+      "value": "2025-09-01",
       "type": "string"
     }
   ],
   "item": [
     {
-      "name": "🏥 Health Check",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/health",
-          "host": ["{{baseUrl}}"],
-          "path": ["health"]
-        }
-      }
-    },
-    {
-      "name": "📋 API Info",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/info",
-          "host": ["{{baseUrl}}"],
-          "path": ["info"]
-        }
-      }
-    },
-    {
-      "name": "➕ Create API Logs Alias",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"aliasName\": \"API-Logs\",\n  \"basePath\": \"\\\\\\\\db-indiminds\\\\C\\\\Friskit\\\\BAT-Files\\\\latest\\\\logs\\\\Frisk-API\"\n}"
+      "name": "🏠 System Info",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          },
+          "response": []
         },
-        "url": {
-          "raw": "{{baseUrl}}/alias-logs/alias",
-          "host": ["{{baseUrl}}"],
-          "path": ["alias-logs", "alias"]
+        {
+          "name": "API Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/info",
+              "host": ["{{baseUrl}}"],
+              "path": ["info"]
+            }
+          },
+          "response": []
         }
-      }
+      ]
     },
     {
-      "name": "➕ Create UI Logs Alias",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"aliasName\": \"UI-Logs\",\n  \"basePath\": \"\\\\\\\\db-indiminds\\\\C\\\\Friskit\\\\BAT-Files\\\\latest\\\\logs\\\\Frisk-UI\"\n}"
+      "name": "👤 Single User (Original)",
+      "item": [
+        {
+          "name": "Create User Alias",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"john_doe\",\n  \"aliasName\": \"MyLogs\",\n  \"basePath\": \"\\\\\\\\server\\\\logs\\\\folder\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/alias-logs/alias",
+              "host": ["{{baseUrl}}"],
+              "path": ["alias-logs", "alias"]
+            }
+          },
+          "response": []
         },
-        "url": {
-          "raw": "{{baseUrl}}/alias-logs/alias",
-          "host": ["{{baseUrl}}"],
-          "path": ["alias-logs", "alias"]
-        }
-      }
-    },
-    {
-      "name": "➕ Create Adapter Logs Alias",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"aliasName\": \"Adapter-Logs\",\n  \"basePath\": \"\\\\\\\\db-indiminds\\\\C\\\\Friskit\\\\BAT-Files\\\\latest\\\\logs\\\\Frisk-Adapter\"\n}"
+        {
+          "name": "Get User Logs by Alias",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/alias-logs/user/john_doe/alias/MyLogs?date={{currentDate}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["alias-logs", "user", "john_doe", "alias", "MyLogs"],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "{{currentDate}}"
+                }
+              ]
+            }
+          },
+          "response": []
         },
-        "url": {
-          "raw": "{{baseUrl}}/alias-logs/alias",
-          "host": ["{{baseUrl}}"],
-          "path": ["alias-logs", "alias"]
+        {
+          "name": "Get All User Logs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/alias-logs/user/john_doe/all?date={{currentDate}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["alias-logs", "user", "john_doe", "all"],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "{{currentDate}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get User Aliases",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/alias-logs/user/john_doe/aliases",
+              "host": ["{{baseUrl}}"],
+              "path": ["alias-logs", "user", "john_doe", "aliases"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User Alias",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/alias-logs/user/john_doe/alias/MyLogs",
+              "host": ["{{baseUrl}}"],
+              "path": ["alias-logs", "user", "john_doe", "alias", "MyLogs"]
+            }
+          },
+          "response": []
         }
-      }
+      ]
     },
     {
-      "name": "📋 Get User Aliases",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/alias-logs/user/{{userId}}/aliases",
-          "host": ["{{baseUrl}}"],
-          "path": ["alias-logs", "user", "{{userId}}", "aliases"]
+      "name": "🎛️ Multi-User Dashboard",
+      "item": [
+        {
+          "name": "Get Multiple Users Logs",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userIds\": [\"john_doe\", \"jane_smith\", \"admin_user\"],\n  \"date\": \"{{currentDate}}\",\n  \"includeStats\": true,\n  \"groupBy\": \"user\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/logs",
+              "host": ["{{baseUrl}}"],
+              "path": ["dashboard", "logs"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get ALL Users Logs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/logs/all?date={{currentDate}}&includeStats=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["dashboard", "logs", "all"],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "{{currentDate}}"
+                },
+                {
+                  "key": "includeStats",
+                  "value": "true"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Dashboard Overview",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userIds\": [\"john_doe\", \"jane_smith\", \"admin_user\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/overview",
+              "host": ["{{baseUrl}}"],
+              "path": ["dashboard", "overview"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Real-time Updates",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userIds\": [\"john_doe\", \"jane_smith\"],\n  \"lastUpdateTime\": \"2025-09-01T10:00:00Z\",\n  \"maxLogs\": 100\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/updates",
+              "host": ["{{baseUrl}}"],
+              "path": ["dashboard", "updates"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cross-User Search",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userIds\": [\"john_doe\", \"jane_smith\", \"admin_user\"],\n  \"searchQuery\": \"error\",\n  \"date\": \"{{currentDate}}\",\n  \"caseSensitive\": false,\n  \"maxResults\": 200\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/search",
+              "host": ["{{baseUrl}}"],
+              "path": ["dashboard", "search"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "User Statistics",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userIds\": [\"john_doe\", \"jane_smith\", \"admin_user\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/statistics",
+              "host": ["{{baseUrl}}"],
+              "path": ["dashboard", "statistics"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Single User Dashboard Logs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/user/john_doe/logs?date={{currentDate}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["dashboard", "user", "john_doe", "logs"],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "{{currentDate}}"
+                }
+              ]
+            }
+          },
+          "response": []
         }
-      }
+      ]
     },
     {
-      "name": "📊 Get API Logs (Today)",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/alias-logs/user/{{userId}}/alias/API-Logs",
-          "host": ["{{baseUrl}}"],
-          "path": ["alias-logs", "user", "{{userId}}", "alias", "API-Logs"]
+      "name": "🔧 Advanced Aggregation",
+      "item": [
+        {
+          "name": "Advanced Log Aggregation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userIds\": [\"john_doe\", \"jane_smith\"],\n  \"aliasNames\": [\"MyLogs\", \"APILogs\"],\n  \"date\": \"{{currentDate}}\",\n  \"logLevels\": [\"ERROR\", \"WARNING\"],\n  \"limit\": 1000,\n  \"offset\": 0,\n  \"groupBy\": \"user\",\n  \"sortBy\": \"timestamp\",\n  \"sortOrder\": \"desc\",\n  \"includeMetadata\": true,\n  \"enableCache\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/aggregator/logs",
+              "host": ["{{baseUrl}}"],
+              "path": ["aggregator", "logs"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Live Log Stream",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userIds\": [\"john_doe\", \"jane_smith\"],\n  \"intervalMs\": 5000,\n  \"maxLogsPerUser\": 50,\n  \"sinceTimestamp\": \"2025-09-01T10:00:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/aggregator/stream",
+              "host": ["{{baseUrl}}"],
+              "path": ["aggregator", "stream"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Error Logs Only",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userIds\": [\"api_service\", \"ui_service\", \"db_service\"],\n  \"date\": \"{{currentDate}}\",\n  \"limit\": 500\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/aggregator/errors",
+              "host": ["{{baseUrl}}"],
+              "path": ["aggregator", "errors"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logs by Level - ERROR",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userIds\": [\"john_doe\", \"jane_smith\"],\n  \"date\": \"{{currentDate}}\",\n  \"limit\": 500\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/aggregator/level/ERROR",
+              "host": ["{{baseUrl}}"],
+              "path": ["aggregator", "level", "ERROR"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logs by Level - WARNING",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userIds\": [\"john_doe\", \"jane_smith\"],\n  \"date\": \"{{currentDate}}\",\n  \"limit\": 500\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/aggregator/level/WARNING",
+              "host": ["{{baseUrl}}"],
+              "path": ["aggregator", "level", "WARNING"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logs Grouped by Time - Hour",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userIds\": [\"john_doe\", \"jane_smith\"],\n  \"date\": \"{{currentDate}}\",\n  \"groupBy\": \"hour\",\n  \"limit\": 1000\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/aggregator/grouped-by-time",
+              "host": ["{{baseUrl}}"],
+              "path": ["aggregator", "grouped-by-time"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logs by Specific Aliases",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"aliasNames\": [\"MyLogs\", \"APILogs\", \"ErrorLogs\"],\n  \"date\": \"{{currentDate}}\",\n  \"limit\": 1000\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/aggregator/aliases",
+              "host": ["{{baseUrl}}"],
+              "path": ["aggregator", "aliases"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Clear Aggregation Cache",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/aggregator/cache/clear",
+              "host": ["{{baseUrl}}"],
+              "path": ["aggregator", "cache", "clear"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Aggregation Statistics",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userIds\": [\"john_doe\", \"jane_smith\", \"admin_user\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/aggregator/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["aggregator", "stats"]
+            }
+          },
+          "response": []
         }
-      }
+      ]
     },
     {
-      "name": "📊 Get UI Logs (Today)",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/alias-logs/user/{{userId}}/alias/UI-Logs",
-          "host": ["{{baseUrl}}"],
-          "path": ["alias-logs", "user", "{{userId}}", "alias", "UI-Logs"]
+      "name": "👥 Admin Operations",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/alias-logs/admin/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["alias-logs", "admin", "users"]
+            }
+          },
+          "response": []
         }
-      }
+      ]
     },
     {
-      "name": "📊 Get Adapter Logs (Today)",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/alias-logs/user/{{userId}}/alias/Adapter-Logs",
-          "host": ["{{baseUrl}}"],
-          "path": ["alias-logs", "user", "{{userId}}", "alias", "Adapter-Logs"]
-        }
-      }
-    },
-    {
-      "name": "📊 Get Specific Date Logs",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/alias-logs/user/{{userId}}/alias/API-Logs?date=2025-09-01",
-          "host": ["{{baseUrl}}"],
-          "path": ["alias-logs", "user", "{{userId}}", "alias", "API-Logs"],
-          "query": [
+      "name": "📋 Test Scenarios",
+      "item": [
+        {
+          "name": "Setup Test Users",
+          "item": [
             {
-              "key": "date",
-              "value": "2025-09-01",
-              "description": "YYYY-MM-DD format"
+              "name": "Create John Doe Alias",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"userId\": \"john_doe\",\n  \"aliasName\": \"MyLogs\",\n  \"basePath\": \"C:\\\\logs\\\\john\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/alias-logs/alias",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["alias-logs", "alias"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Jane Smith Alias",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"userId\": \"jane_smith\",\n  \"aliasName\": \"APILogs\",\n  \"basePath\": \"C:\\\\logs\\\\jane\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/alias-logs/alias",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["alias-logs", "alias"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Admin User Alias",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"userId\": \"admin_user\",\n  \"aliasName\": \"SystemLogs\",\n  \"basePath\": \"C:\\\\logs\\\\system\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/alias-logs/alias",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["alias-logs", "alias"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Production Scenarios",
+          "item": [
+            {
+              "name": "Monitor All Production Services",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"userIds\": [\"api_service\", \"ui_service\", \"db_service\", \"payment_service\"],\n  \"logLevels\": [\"ERROR\", \"WARNING\"],\n  \"limit\": 200,\n  \"groupBy\": \"user\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/aggregator/logs",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["aggregator", "logs"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Search for Database Issues",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"userIds\": [],\n  \"searchQuery\": \"database connection\",\n  \"caseSensitive\": false,\n  \"maxResults\": 100\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/dashboard/search",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["dashboard", "search"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Real-time Error Monitoring",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"userIds\": [],\n  \"intervalMs\": 3000,\n  \"maxLogsPerUser\": 20\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/aggregator/stream",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["aggregator", "stream"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Development Team Scenarios",
+          "item": [
+            {
+              "name": "Daily Team Standup - All Logs",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/dashboard/logs/all",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["dashboard", "logs", "all"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Find All Errors from Yesterday",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"userIds\": [\"john_doe\", \"jane_smith\"],\n  \"date\": \"2025-08-31\",\n  \"limit\": 300\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/aggregator/errors",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["aggregator", "errors"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Track Specific Feature Logs",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"userIds\": [\"john_doe\", \"jane_smith\"],\n  \"searchQuery\": \"user authentication\",\n  \"date\": \"{{currentDate}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/dashboard/search",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["dashboard", "search"]
+                }
+              },
+              "response": []
             }
           ]
         }
-      }
-    },
-    {
-      "name": "🌐 Get All User Logs (Polling)",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/alias-logs/user/{{userId}}/all",
-          "host": ["{{baseUrl}}"],
-          "path": ["alias-logs", "user", "{{userId}}", "all"]
-        }
-      }
-    },
-    {
-      "name": "🗑️ Delete Alias",
-      "request": {
-        "method": "DELETE",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/alias-logs/user/{{userId}}/alias/API-Logs",
-          "host": ["{{baseUrl}}"],
-          "path": ["alias-logs", "user", "{{userId}}", "alias", "API-Logs"]
-        }
-      }
-    },
-    {
-      "name": "👥 Get All Users (Admin)",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/alias-logs/admin/users",
-          "host": ["{{baseUrl}}"],
-          "path": ["alias-logs", "admin", "users"]
-        }
-      }
+      ]
     }
   ],
   "event": [
     {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Set current date if not already set",
+          "if (!pm.collectionVariables.get('currentDate')) {",
+          "  const today = new Date().toISOString().split('T')[0];",
+          "  pm.collectionVariables.set('currentDate', today);",
+          "}",
+          "",
+          "// Log request info",
+          "console.log('📊 Making request to:', pm.request.url.toString());",
+          "console.log('📅 Using date:', pm.collectionVariables.get('currentDate'));"
+        ]
+      }
+    },
+    {
       "listen": "test",
       "script": {
+        "type": "text/javascript",
         "exec": [
           "// Basic response validation",
-          "pm.test(\"Response should be JSON\", function () {",
-          "    pm.response.to.be.json;",
+          "pm.test('Status code should be successful', function () {",
+          "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
           "});",
           "",
-          "pm.test(\"Response should have success field\", function () {",
-          "    var jsonData = pm.response.json();",
-          "    pm.expect(jsonData).to.have.property('success');",
-          "});"
-        ],
-        "type": "text/javascript"
+          "pm.test('Response should be JSON', function () {",
+          "  pm.expect(pm.response.headers.get('Content-Type')).to.include('json');",
+          "});",
+          "",
+          "pm.test('Response should have success field', function () {",
+          "  const responseJson = pm.response.json();",
+          "  pm.expect(responseJson).to.have.property('success');",
+          "});",
+          "",
+          "// Log response summary",
+          "const responseJson = pm.response.json();",
+          "console.log('✅ Response status:', responseJson.success ? 'SUCCESS' : 'FAILED');",
+          "if (responseJson.data && responseJson.data.dashboard) {",
+          "  console.log('📊 Dashboard stats:', responseJson.data.dashboard.statistics);",
+          "}"
+        ]
       }
     }
   ]
