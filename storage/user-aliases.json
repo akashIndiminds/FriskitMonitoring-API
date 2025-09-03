@@ -16,16 +16,16 @@
         "basePath": "\\\\db-indiminds\\C\\Friskit\\BAT-Files\\latest\\logs\\Frisk-UI",
         "originalPath": "\\\\db-indiminds\\C\\Friskit\\BAT-Files\\latest\\logs\\Frisk-UI",
         "createdAt": "2025-09-01T11:21:09.355Z",
-        "lastAccessed": "2025-09-03T05:56:15.665Z",
-        "accessCount": 7
+        "lastAccessed": "2025-09-03T07:01:04.695Z",
+        "accessCount": 10
       },
       {
         "aliasName": "UI-Logs",
         "basePath": "\\\\db-indiminds\\C\\Friskit\\BAT-Files\\latest\\logs\\Frisk-UI",
         "originalPath": "\\\\db-indiminds\\C\\Friskit\\BAT-Files\\latest\\logs\\Frisk-UI",
         "createdAt": "2025-09-01T11:22:11.375Z",
-        "lastAccessed": "2025-09-03T05:56:15.672Z",
-        "accessCount": 5
+        "lastAccessed": "2025-09-03T07:01:04.702Z",
+        "accessCount": 8
       }
     ],
     "Huss": [
@@ -34,8 +34,8 @@
         "basePath": "\\\\db-indiminds\\C\\Friskit\\Frisk-API\\AppLogs",
         "originalPath": "\\\\db-indiminds\\C\\Friskit\\Frisk-API\\AppLogs",
         "createdAt": "2025-09-01T12:20:05.491Z",
-        "lastAccessed": "2025-09-03T05:56:15.747Z",
-        "accessCount": 4,
+        "lastAccessed": "2025-09-03T07:01:04.801Z",
+        "accessCount": 7,
         "pathStatus": "not_validated"
       }
     ],
@@ -45,11 +45,11 @@
         "basePath": "\\\\db-indiminds\\C\\Friskit\\BAT-Files\\latest\\logs\\Frisk-TradeAdapter",
         "originalPath": "\\\\db-indiminds\\C\\Friskit\\BAT-Files\\latest\\logs\\Frisk-TradeAdapter",
         "createdAt": "2025-09-01T12:20:56.179Z",
-        "lastAccessed": "2025-09-03T05:56:15.764Z",
-        "accessCount": 1,
+        "lastAccessed": "2025-09-03T07:01:04.815Z",
+        "accessCount": 4,
         "pathStatus": "not_validated"
       }
     ]
   },
-  "lastSaved": "2025-09-03T05:56:15.764Z"
+  "lastSaved": "2025-09-03T07:01:04.815Z"
 }
