@@ -1,5 +1,5 @@
 // 📁 src/services/multiUserDashboardService.js
-// Multi-User Dashboard - Aggregate logs from multiple users
+// UPDATED - With File IDs (UserId-AliasName-FileName)
 // ==========================================
 import { UserAliasService } from './userAliasService.js';
 import { SimpleLogService } from './simpleLogService.js';
@@ -10,21 +10,16 @@ export class MultiUserDashboardService {
     this.logService = new SimpleLogService();
   }
 
-  // 🎯 Get logs from multiple users for dashboard
-  async getDashboardLogs(userIds = [], options = {}) {
+  // 🎯 Get ALL users logs - WITH FILE IDs
+  async getAllUsersLogsSimple(options = {}) {
     try {
-      const { date = null, includeStats = true, groupBy = 'user' } = options;
+      const { date = null } = options;
       
-      console.log(`🌐 Dashboard request for users: [${userIds.join(', ')}]`);
-      console.log(`📅 Target date: ${date || 'current date'}`);
+      // Get ALL users in system
+      const allUsers = this.userAliasService.getAllUsers();
+      console.log(`🌐 Processing ALL users: [${allUsers.join(', ')}]`);
       
-      // If no users specified, get ALL users
-      if (userIds.length === 0) {
-        userIds = this.userAliasService.getAllUsers();
-        console.log(`📋 No users specified, using ALL users: [${userIds.join(', ')}]`);
-      }
-
-      if (userIds.length === 0) {
+      if (allUsers.length === 0) {
         return {
           success: false,
           error: 'No users found in system',
@@ -32,86 +27,96 @@ export class MultiUserDashboardService {
         };
       }
 
-      const dashboardData = {
-        users: [],
-        aggregatedLogs: [],
-        statistics: {
-          totalUsers: userIds.length,
-          totalAliases: 0,
-          totalFiles: 0,
-          totalLogs: 0,
-          successfulUsers: 0,
-          failedUsers: 0,
-          userBreakdown: {}
-        }
-      };
-
       // Process each user
-      for (const userId of userIds) {
+      const allUserData = [];
+      let totalLogs = 0;
+
+      for (const userId of allUsers) {
         console.log(`👤 Processing user: ${userId}`);
         
-        const userData = await this.getUserLogsForDashboard(userId, { date });
-        dashboardData.users.push(userData);
-
-        // Aggregate statistics
+        const userData = await this.getUserFilesWithContent(userId, { date });
+        allUserData.push(userData);
+        
         if (userData.success) {
-          dashboardData.statistics.successfulUsers++;
-          dashboardData.statistics.totalAliases += userData.summary.totalAliases;
-          dashboardData.statistics.totalFiles += userData.summary.totalFiles;
-          dashboardData.statistics.totalLogs += userData.summary.totalLogs;
-
-          // Add to aggregated logs with user context
-          userData.logs.forEach(log => {
-            dashboardData.aggregatedLogs.push({
-              ...log,
-              userId: userData.userId,
-              userName: userData.userName || userData.userId,
-              source: `${userData.userId}/${log.aliasName}/${log.fileName}`
-            });
-          });
-        } else {
-          dashboardData.statistics.failedUsers++;
+          totalLogs += userData.totalLogs;
         }
-
-        // User breakdown
-        dashboardData.statistics.userBreakdown[userId] = {
-          success: userData.success,
-          aliases: userData.success ? userData.summary.totalAliases : 0,
-          files: userData.success ? userData.summary.totalFiles : 0,
-          logs: userData.success ? userData.summary.totalLogs : 0,
-          error: userData.success ? null : userData.error
-        };
       }
 
-      // Sort aggregated logs by timestamp (newest first)
-      dashboardData.aggregatedLogs.sort((a, b) => 
-        new Date(b.timestamp || b.modified) - new Date(a.timestamp || a.modified)
-      );
+      const searchDate = date || new Date().toISOString().split('T')[0];
 
-      const result = {
+      return {
         success: true,
-        searchDate: date || new Date().toISOString().split('T')[0],
-        isCurrentDate: !date,
-        dashboard: dashboardData,
-        generatedAt: new Date().toISOString()
+        data: {
+          users: allUserData,
+          totalUsers: allUsers.length,
+          totalLogs: totalLogs,
+          searchDate: searchDate,
+          isCurrentDate: !date,
+          generatedAt: new Date().toISOString()
+        }
       };
 
-      console.log(`✅ Dashboard complete: ${dashboardData.statistics.totalLogs} total logs from ${dashboardData.statistics.successfulUsers} users`);
-      
-      return result;
-
     } catch (error) {
-      console.error('❌ Error generating dashboard:', error);
+      console.error('❌ Error getting all users logs:', error);
       return {
         success: false,
-        error: error.message,
-        userIds
+        error: error.message
       };
     }
   }
 
-  // 🎯 Get single user's logs formatted for dashboard
-  async getUserLogsForDashboard(userId, options = {}) {
+  // 🎯 Get SPECIFIC users logs - WITH FILE IDs
+  async getSpecificUsersLogsSimple(userIds = [], options = {}) {
+    try {
+      const { date = null } = options;
+      
+      console.log(`📊 Processing specific users: [${userIds.join(', ')}]`);
+      
+      if (userIds.length === 0) {
+        // If no users specified, get ALL users
+        return await this.getAllUsersLogsSimple(options);
+      }
+
+      // Process each specified user
+      const userData = [];
+      let totalLogs = 0;
+
+      for (const userId of userIds) {
+        console.log(`👤 Processing user: ${userId}`);
+        
+        const userResult = await this.getUserFilesWithContent(userId, { date });
+        userData.push(userResult);
+        
+        if (userResult.success) {
+          totalLogs += userResult.totalLogs;
+        }
+      }
+
+      const searchDate = date || new Date().toISOString().split('T')[0];
+
+      return {
+        success: true,
+        data: {
+          users: userData,
+          totalUsers: userIds.length,
+          totalLogs: totalLogs,
+          searchDate: searchDate,
+          isCurrentDate: !date,
+          generatedAt: new Date().toISOString()
+        }
+      };
+
+    } catch (error) {
+      console.error('❌ Error getting specific users logs:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  // 🎯 Get user's files with content - WITH UNIQUE FILE IDs
+  async getUserFilesWithContent(userId, options = {}) {
     try {
       const { date = null } = options;
       
@@ -120,292 +125,144 @@ export class MultiUserDashboardService {
       if (aliases.length === 0) {
         return {
           userId,
-          userName: userId,
           success: false,
           error: `No aliases found for user ${userId}`,
           aliases: [],
-          logs: [],
-          summary: {
-            totalAliases: 0,
-            totalFiles: 0,
-            totalLogs: 0
-          }
+          totalLogs: 0
         };
       }
 
-      const userLogs = [];
-      let totalFiles = 0;
-      let totalLogs = 0;
       const aliasResults = [];
+      let userTotalLogs = 0;
 
       // Process each alias for this user
       for (const alias of aliases) {
         console.log(`  📂 Processing alias: ${alias.aliasName}`);
         
+        // Find today's files (or specific date)
         const filesResult = await this.logService.findTodaysFiles(alias.basePath, date);
         
-        if (filesResult.success && filesResult.files.length > 0) {
-          // Read content from each file
-          for (const file of filesResult.files) {
-            const contentResult = await this.logService.readFileContent(file.filePath);
-            
-            if (contentResult.success) {
-              totalFiles++;
-              totalLogs += contentResult.totalLines;
-
-              // Convert raw lines to log objects for dashboard
-              contentResult.content.forEach((line, index) => {
-                userLogs.push({
-                  id: `${userId}-${alias.aliasName}-${file.fileName}-${index}`,
-                  userId,
-                  aliasName: alias.aliasName,
-                  fileName: file.fileName,
-                  filePath: file.filePath,
-                  lineNumber: index + 1,
-                  content: line,
-                  timestamp: this.extractTimestamp(line),
-                  logLevel: this.detectLogLevel(line),
-                  modified: file.modified,
-                  fileSize: file.size
-                });
-              });
-            }
-          }
+        if (!filesResult.success) {
+          aliasResults.push({
+            aliasName: alias.aliasName,
+            basePath: alias.basePath,
+            success: false,
+            error: filesResult.error,
+            files: [],
+            totalLogs: 0
+          });
+          continue;
         }
+
+        if (filesResult.files.length === 0) {
+          aliasResults.push({
+            aliasName: alias.aliasName,
+            basePath: alias.basePath,
+            success: false,
+            error: `No log files found for date ${filesResult.searchDate}`,
+            files: [],
+            totalLogs: 0
+          });
+          continue;
+        }
+
+        // Read content from each file - WITH UNIQUE IDs
+        const filesWithContent = [];
+        let aliasLogCount = 0;
+
+        for (const file of filesResult.files) {
+          console.log(`📖 Processing file: ${file.fileName}`);
+          
+          const contentResult = await this.logService.readFileContent(file.filePath);
+          
+          // 🎯 CREATE UNIQUE FILE ID: UserId-AliasName-FileName
+          const fileId = `${userId}-${alias.aliasName}-${file.fileName}`;
+          
+          const fileData = {
+            id: fileId,  // ✅ UNIQUE ID ADDED
+            fileName: file.fileName,
+            filePath: file.filePath,
+            size: file.size,
+            sizeFormatted: file.sizeFormatted,
+            modified: file.modified,
+            modifiedDate: file.modifiedDate,
+            extension: file.extension,
+            success: contentResult.success,
+            totalLines: contentResult.totalLines || 0,
+            logs: contentResult.content || [], // Raw lines array
+            error: contentResult.error,
+            readAt: contentResult.readAt,
+            
+            // ✅ METADATA FOR UI
+            metadata: {
+              userId: userId,
+              aliasName: alias.aliasName,
+              uniqueId: fileId,
+              source: `${userId}/${alias.aliasName}/${file.fileName}`
+            }
+          };
+
+          if (contentResult.success) {
+            aliasLogCount += contentResult.totalLines;
+            console.log(`  ✅ Success: ${file.fileName} - ${contentResult.totalLines} lines (ID: ${fileId})`);
+          } else {
+            console.log(`  ❌ Failed: ${file.fileName} - ${contentResult.error}`);
+          }
+
+          filesWithContent.push(fileData);
+        }
+
+        // Update alias access count
+        await this.userAliasService.updateAliasAccess(userId, alias.aliasName);
 
         aliasResults.push({
           aliasName: alias.aliasName,
           basePath: alias.basePath,
-          filesFound: filesResult.success ? filesResult.files.length : 0,
-          success: filesResult.success,
-          error: filesResult.success ? null : filesResult.error
+          accessCount: alias.accessCount + 1,
+          lastAccessed: new Date().toISOString(),
+          success: true,
+          files: filesWithContent,
+          summary: {
+            totalFiles: filesWithContent.length,
+            successfulFiles: filesWithContent.filter(f => f.success).length,
+            failedFiles: filesWithContent.filter(f => !f.success).length,
+            totalLogs: aliasLogCount
+          },
+          // ✅ FILE IDs LIST FOR QUICK REFERENCE
+          fileIds: filesWithContent.map(f => f.id)
         });
+
+        userTotalLogs += aliasLogCount;
       }
+
+      const searchDate = date || new Date().toISOString().split('T')[0];
 
       return {
         userId,
-        userName: userId,
         success: true,
+        searchDate: searchDate,
+        isCurrentDate: !date,
         aliases: aliasResults,
-        logs: userLogs,
         summary: {
           totalAliases: aliases.length,
-          totalFiles,
-          totalLogs
-        }
-      };
-
-    } catch (error) {
-      console.error(`❌ Error getting user logs for ${userId}:`, error);
-      return {
-        userId,
-        userName: userId,
-        success: false,
-        error: error.message,
-        aliases: [],
-        logs: [],
-        summary: {
-          totalAliases: 0,
-          totalFiles: 0,
-          totalLogs: 0
-        }
-      };
-    }
-  }
-
-  // 🎯 Get real-time dashboard updates (polling)
-  async getDashboardUpdates(userIds = [], lastUpdateTime = null, options = {}) {
-    try {
-      const { maxLogs = 100 } = options;
-      
-      console.log(`🔄 Dashboard updates requested for: [${userIds.join(', ')}]`);
-      console.log(`⏰ Since: ${lastUpdateTime || 'beginning'}`);
-      
-      const cutoffTime = lastUpdateTime ? new Date(lastUpdateTime) : new Date(Date.now() - 5 * 60 * 1000); // Last 5 minutes
-      
-      const updates = {
-        newLogs: [],
-        userUpdates: [],
-        totalNewLogs: 0,
-        updateTime: new Date().toISOString()
-      };
-
-      for (const userId of userIds) {
-        const userLogs = await this.getUserLogsForDashboard(userId);
-        
-        if (userLogs.success) {
-          // Filter logs newer than cutoff time
-          const newLogs = userLogs.logs.filter(log => {
-            const logTime = new Date(log.timestamp || log.modified);
-            return logTime > cutoffTime;
-          });
-
-          updates.newLogs.push(...newLogs);
-          updates.userUpdates.push({
-            userId,
-            newLogsCount: newLogs.length,
-            totalLogs: userLogs.logs.length
-          });
-        }
-      }
-
-      // Sort by timestamp and limit
-      updates.newLogs.sort((a, b) => 
-        new Date(b.timestamp || b.modified) - new Date(a.timestamp || a.modified)
-      );
-      
-      if (updates.newLogs.length > maxLogs) {
-        updates.newLogs = updates.newLogs.slice(0, maxLogs);
-      }
-
-      updates.totalNewLogs = updates.newLogs.length;
-
-      return {
-        success: true,
-        updates,
-        hasNewData: updates.totalNewLogs > 0
-      };
-
-    } catch (error) {
-      console.error('❌ Error getting dashboard updates:', error);
-      return {
-        success: false,
-        error: error.message
-      };
-    }
-  }
-
-  // 🎯 Search across multiple users
-  async searchAcrossUsers(userIds = [], searchQuery = '', options = {}) {
-    try {
-      const { date = null, caseSensitive = false, maxResults = 200 } = options;
-      
-      console.log(`🔍 Cross-user search: "${searchQuery}" in [${userIds.join(', ')}]`);
-      
-      const searchResults = {
-        query: searchQuery,
-        users: userIds,
-        results: [],
-        totalMatches: 0,
-        searchTime: new Date().toISOString()
-      };
-
-      const query = caseSensitive ? searchQuery : searchQuery.toLowerCase();
-
-      for (const userId of userIds) {
-        const userLogs = await this.getUserLogsForDashboard(userId, { date });
-        
-        if (userLogs.success) {
-          const matches = userLogs.logs.filter(log => {
-            const content = caseSensitive ? log.content : log.content.toLowerCase();
-            return content.includes(query);
-          });
-
-          searchResults.results.push(...matches);
-        }
-      }
-
-      // Sort by relevance and timestamp
-      searchResults.results.sort((a, b) => {
-        const aRelevance = (a.content.match(new RegExp(query, 'gi')) || []).length;
-        const bRelevance = (b.content.match(new RegExp(query, 'gi')) || []).length;
-        
-        if (aRelevance !== bRelevance) return bRelevance - aRelevance;
-        return new Date(b.timestamp || b.modified) - new Date(a.timestamp || a.modified);
-      });
-
-      if (searchResults.results.length > maxResults) {
-        searchResults.results = searchResults.results.slice(0, maxResults);
-      }
-
-      searchResults.totalMatches = searchResults.results.length;
-
-      return {
-        success: true,
-        searchResults
-      };
-
-    } catch (error) {
-      console.error('❌ Error searching across users:', error);
-      return {
-        success: false,
-        error: error.message
-      };
-    }
-  }
-
-  // 🎯 Get user statistics for dashboard
-  async getUserStatistics(userIds = []) {
-    try {
-      const stats = {
-        users: [],
-        overview: {
-          totalUsers: userIds.length,
-          totalAliases: 0,
-          activeUsers: 0,
-          inactiveUsers: 0
+          totalLogs: userTotalLogs,
+          totalFiles: aliasResults.reduce((sum, alias) => sum + (alias.summary?.totalFiles || 0), 0)
         },
+        // ✅ ALL FILE IDs FOR THIS USER
+        allFileIds: aliasResults.flatMap(alias => alias.fileIds || []),
         generatedAt: new Date().toISOString()
       };
 
-      for (const userId of userIds) {
-        const aliases = this.userAliasService.getUserAliases(userId);
-        const isActive = aliases.length > 0;
-        
-        if (isActive) stats.overview.activeUsers++;
-        else stats.overview.inactiveUsers++;
-        
-        stats.overview.totalAliases += aliases.length;
-
-        stats.users.push({
-          userId,
-          aliasCount: aliases.length,
-          aliases: aliases.map(a => ({
-            name: a.aliasName,
-            basePath: a.basePath,
-            accessCount: a.accessCount,
-            lastAccessed: a.lastAccessed
-          })),
-          isActive,
-          totalAccess: aliases.reduce((sum, a) => sum + a.accessCount, 0)
-        });
-      }
-
-      return {
-        success: true,
-        statistics: stats
-      };
-
     } catch (error) {
+      console.error(`❌ Error getting user files for ${userId}:`, error);
       return {
+        userId,
         success: false,
-        error: error.message
+        error: error.message,
+        aliases: [],
+        totalLogs: 0,
+        allFileIds: []
       };
     }
-  }
-
-  // Helper methods
-  extractTimestamp(line) {
-    const timestampPatterns = [
-      /^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\]/,
-      /^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})/,
-      /^\[(\d{2}:\d{2}:\d{2})\]/,
-      /^(\d{2}:\d{2}:\d{2})/
-    ];
-
-    for (const pattern of timestampPatterns) {
-      const match = line.match(pattern);
-      if (match) return match[1];
-    }
-
-    return new Date().toISOString();
-  }
-
-  detectLogLevel(line) {
-    const lowerLine = line.toLowerCase();
-    if (lowerLine.includes('error') || lowerLine.includes('failed')) return 'ERROR';
-    if (lowerLine.includes('warn') || lowerLine.includes('warning')) return 'WARNING';
-    if (lowerLine.includes('info') || lowerLine.includes('success')) return 'INFO';
-    return 'DEBUG';
   }
 }

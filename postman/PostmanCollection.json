@@ -1,0 +1,621 @@
+{
+  "info": {
+    "_postman_id": "abcd1234-5678-9012-3456-789012345678",
+    "name": "Log Dashboard - Complete CRUD Operations",
+    "description": "Complete API collection with Create, Read, Update, Delete operations for Log Dashboard",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "12345"
+  },
+  "item": [
+    {
+      "name": "🏠 System Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "API Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/info",
+              "host": ["{{baseUrl}}"],
+              "path": ["info"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "👤 User Management (CRUD)",
+      "item": [
+        {
+          "name": "1. Create User Alias",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Alias created successfully', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.success).to.be.true;",
+                  "    console.log('✅ Alias created:', responseJson.data?.alias?.aliasName);",
+                  "    ",
+                  "    // Save values for other requests",
+                  "    pm.collectionVariables.set('testUserId', responseJson.data.alias.userId || 'Imran');",
+                  "    pm.collectionVariables.set('testAliasName', responseJson.data.alias.aliasName);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"Imran\",\n  \"aliasName\": \"API-Logs\",\n  \"basePath\": \"\\\\\\\\db-indiminds\\\\C\\\\Friskit\\\\BAT-Files\\\\latest\\\\logs\\\\Frisk-API\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/alias-logs/alias",
+              "host": ["{{baseUrl}}"],
+              "path": ["alias-logs", "alias"]
+            },
+            "description": "Create a new alias for a user"
+          },
+          "response": []
+        },
+        {
+          "name": "2. Get User Aliases (Read)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const responseJson = pm.response.json();",
+                  "if (responseJson.success && responseJson.data) {",
+                  "    console.log('📂 Total aliases:', responseJson.data.total);",
+                  "    console.log('📋 Aliases:', responseJson.data.aliases.map(a => a.aliasName).join(', '));",
+                  "    ",
+                  "    // Show alias details",
+                  "    responseJson.data.aliases.forEach((alias, index) => {",
+                  "        console.log(`${index + 1}. ${alias.aliasName}:`);",
+                  "        console.log(`   Path: ${alias.basePath}`);",
+                  "        console.log(`   Access Count: ${alias.accessCount}`);",
+                  "        console.log(`   Last Accessed: ${alias.lastAccessed}`);",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/alias-logs/user/{{testUserId}}/aliases",
+              "host": ["{{baseUrl}}"],
+              "path": ["alias-logs", "user", "{{testUserId}}", "aliases"]
+            },
+            "description": "Get all aliases for a specific user"
+          },
+          "response": []
+        },
+        {
+          "name": "3. Edit/Update User Alias",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Alias updated successfully', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.success).to.be.true;",
+                  "    ",
+                  "    if (responseJson.data?.changes) {",
+                  "        console.log('✅ Alias updated successfully!');",
+                  "        console.log('📝 Changes made:');",
+                  "        console.log(`   Alias Name: ${responseJson.data.changes.aliasName.old} → ${responseJson.data.changes.aliasName.new}`);",
+                  "        console.log(`   Path: ${responseJson.data.changes.basePath.old} → ${responseJson.data.changes.basePath.new}`);",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"newAliasName\": \"Updated-API-Logs\",\n  \"newBasePath\": \"\\\\\\\\db-indiminds\\\\C\\\\Friskit\\\\Updated\\\\logs\\\\Frisk-API\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/alias-logs/user/{{testUserId}}/alias/{{testAliasName}}",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "alias-logs",
+                "user",
+                "{{testUserId}}",
+                "alias",
+                "{{testAliasName}}"
+              ]
+            },
+            "description": "Update/Edit an existing alias (name and path)"
+          },
+          "response": []
+        },
+        {
+          "name": "4. Delete User Alias",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Alias deleted successfully', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.success).to.be.true;",
+                  "    console.log('🗑️ Alias deleted successfully');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/alias-logs/user/Imran/alias/API-Logs",
+              "host": ["{{baseUrl}}"],
+              "path": ["alias-logs", "user", "Imran", "alias", "API-Logs"]
+            },
+            "description": "Delete a user's alias permanently"
+          },
+          "response": []
+        },
+        {
+          "name": "5. Get All Users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const responseJson = pm.response.json();",
+                  "if (responseJson.data) {",
+                  "    console.log('👥 Total Users:', responseJson.data.total);",
+                  "    console.log('📋 Users:', responseJson.data.users.join(', '));",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/alias-logs/admin/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["alias-logs", "admin", "users"]
+            },
+            "description": "Get list of all users in the system"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📊 Dashboard (Main UI Endpoints)",
+      "item": [
+        {
+          "name": "🌐 Get ALL Users Logs (Polling)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const responseJson = pm.response.json();",
+                  "if (responseJson.data) {",
+                  "    console.log('📊 Dashboard Summary:');",
+                  "    console.log(`   Total Users: ${responseJson.data.totalUsers}`);",
+                  "    console.log(`   Total Logs: ${responseJson.data.totalLogs}`);",
+                  "    console.log(`   Search Date: ${responseJson.data.searchDate}`);",
+                  "    console.log(`   Is Current Date: ${responseJson.data.isCurrentDate}`);",
+                  "    ",
+                  "    // Show user breakdown",
+                  "    if (responseJson.data.users) {",
+                  "        console.log('\\n👥 User Breakdown:');",
+                  "        responseJson.data.users.forEach(user => {",
+                  "            if (user.success) {",
+                  "                console.log(`   ${user.userId}: ${user.summary?.totalLogs || 0} logs (${user.summary?.totalFiles || 0} files)`);",
+                  "                ",
+                  "                if (user.aliases) {",
+                  "                    user.aliases.forEach(alias => {",
+                  "                        console.log(`     📂 ${alias.aliasName}: ${alias.summary?.totalFiles || 0} files, ${alias.summary?.totalLogs || 0} logs`);",
+                  "                        ",
+                  "                        if (alias.files) {",
+                  "                            alias.files.forEach(file => {",
+                  "                                console.log(`       📄 ${file.fileName}: ${file.totalLines} lines (${file.sizeFormatted})`);",
+                  "                            });",
+                  "                        }",
+                  "                    });",
+                  "                }",
+                  "            } else {",
+                  "                console.log(`   ${user.userId}: ERROR - ${user.error}`);",
+                  "            }",
+                  "        });",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/logs/all",
+              "host": ["{{baseUrl}}"],
+              "path": ["dashboard", "logs", "all"]
+            },
+            "description": "Main dashboard endpoint - Use this for auto-refresh every 5 seconds"
+          },
+          "response": []
+        },
+        {
+          "name": "🎯 Get Specific Users Logs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const responseJson = pm.response.json();",
+                  "if (responseJson.data) {",
+                  "    console.log('🎯 Specific Users Summary:');",
+                  "    console.log(`   Requested Users: ${responseJson.data.totalUsers}`);",
+                  "    console.log(`   Total Logs: ${responseJson.data.totalLogs}`);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userIds\": [\"Imran\", \"Huss\"]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/logs",
+              "host": ["{{baseUrl}}"],
+              "path": ["dashboard", "logs"]
+            },
+            "description": "Get logs from specific users only"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🔍 Individual User Operations",
+      "item": [
+        {
+          "name": "Get Single User All Logs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const responseJson = pm.response.json();",
+                  "if (responseJson.success) {",
+                  "    console.log('👤 Single User Summary:');",
+                  "    console.log(`   User: ${responseJson.userId}`);",
+                  "    console.log(`   Total Aliases: ${responseJson.overallSummary?.totalAliases || 0}`);",
+                  "    console.log(`   Total Files: ${responseJson.overallSummary?.totalFiles || 0}`);",
+                  "    console.log(`   Total Logs: ${responseJson.overallSummary?.totalLogs || 0}`);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/alias-logs/user/{{testUserId}}/all",
+              "host": ["{{baseUrl}}"],
+              "path": ["alias-logs", "user", "{{testUserId}}", "all"]
+            },
+            "description": "Get all logs for a single user (all their aliases)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Logs by Specific Alias",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const responseJson = pm.response.json();",
+                  "if (responseJson.success) {",
+                  "    console.log('📂 Alias Summary:');",
+                  "    console.log(`   User: ${responseJson.alias.name}`);",
+                  "    console.log(`   Path: ${responseJson.alias.basePath}`);",
+                  "    console.log(`   Files: ${responseJson.summary?.totalFiles || 0}`);",
+                  "    console.log(`   Logs: ${responseJson.summary?.totalLogs || 0}`);",
+                  "    ",
+                  "    if (responseJson.files) {",
+                  "        console.log('   File Details:');",
+                  "        responseJson.files.forEach(file => {",
+                  "            console.log(`     📄 ${file.fileName}: ${file.totalLines} lines (${file.sizeFormatted})`);",
+                  "        });",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/alias-logs/user/Imran/alias/API-Logs",
+              "host": ["{{baseUrl}}"],
+              "path": ["alias-logs", "user", "Imran", "alias", "API-Logs"]
+            },
+            "description": "Get logs from a specific alias only"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🧪 Test Scenarios",
+      "item": [
+        {
+          "name": "Setup Multiple Test Users",
+          "item": [
+            {
+              "name": "Create Imran - API Logs",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"userId\": \"Imran\",\n  \"aliasName\": \"API-Logs\",\n  \"basePath\": \"\\\\\\\\db-indiminds\\\\C\\\\Friskit\\\\BAT-Files\\\\latest\\\\logs\\\\Frisk-API\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/alias-logs/alias",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["alias-logs", "alias"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Imran - UI Logs",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"userId\": \"Imran\",\n  \"aliasName\": \"UI-Logs\",\n  \"basePath\": \"\\\\\\\\db-indiminds\\\\C\\\\Friskit\\\\BAT-Files\\\\latest\\\\logs\\\\Frisk-UI\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/alias-logs/alias",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["alias-logs", "alias"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Huss - API Logs",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"userId\": \"Huss\",\n  \"aliasName\": \"Huss-API-Logs\",\n  \"basePath\": \"\\\\\\\\db-indiminds\\\\C\\\\Friskit\\\\Frisk-API\\\\AppLogs\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/alias-logs/alias",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["alias-logs", "alias"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Oka - Adapter Logs",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"userId\": \"Oka\",\n  \"aliasName\": \"Adapter-Logs\",\n  \"basePath\": \"\\\\\\\\db-indiminds\\\\C\\\\Friskit\\\\BAT-Files\\\\latest\\\\logs\\\\Frisk-TradeAdapter\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/alias-logs/alias",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["alias-logs", "alias"]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Set baseUrl if not already set",
+          "if (!pm.collectionVariables.get('baseUrl')) {",
+          "    pm.collectionVariables.set('baseUrl', 'http://localhost:5000/api');",
+          "}",
+          "",
+          "// Set default test values",
+          "if (!pm.collectionVariables.get('testUserId')) {",
+          "    pm.collectionVariables.set('testUserId', 'Imran');",
+          "}",
+          "if (!pm.collectionVariables.get('testAliasName')) {",
+          "    pm.collectionVariables.set('testAliasName', 'API-Logs');",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global response validation",
+          "pm.test('Response time is reasonable', function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(15000);",
+          "});",
+          "",
+          "pm.test('Response should be JSON', function () {",
+          "    pm.expect(pm.response.headers.get('Content-Type')).to.include('json');",
+          "});",
+          "",
+          "// Log request info",
+          "console.log(`\\n🌐 ${pm.info.requestName}`);",
+          "console.log(`📡 ${pm.request.method} ${pm.request.url}`);",
+          "console.log(`⏱️ Response time: ${pm.response.responseTime}ms`);",
+          "console.log(`📊 Status: ${pm.response.status} ${pm.response.reason()}`);",
+          "console.log('─'.repeat(50));"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api",
+      "type": "string"
+    },
+    {
+      "key": "testUserId",
+      "value": "Imran",
+      "type": "string"
+    },
+    {
+      "key": "testAliasName",
+      "value": "API-Logs",
+      "type": "string"
+    }
+  ]
+}
