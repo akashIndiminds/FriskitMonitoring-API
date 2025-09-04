@@ -1,12 +1,57 @@
-// server.js - Network Enabled
+// server.js - Network Enabled with CORS
 // ==========================================
 import app from "./src/app.js";
 import { config } from "./src/config/index.js";
+import cors from "cors";
 import os from "os";
 
 const PORT = config.server.port;
 // 🔥 CHANGED: Use 0.0.0.0 to accept connections from any IP
 const HOST = "0.0.0.0"; // Instead of 'localhost'
+
+// 🌐 CORS Configuration
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Allow all origins for development/network access
+    // You can restrict this to specific domains in production
+    callback(null, true);
+  },
+  credentials: true, // Allow cookies and authorization headers
+  optionsSuccessStatus: 200, // For legacy browser support
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'],
+  allowedHeaders: [
+    'Origin',
+    'X-Requested-With',
+    'Content-Type',
+    'Accept',
+    'Authorization',
+    'Cache-Control',
+    'X-Access-Token'
+  ],
+  exposedHeaders: ['Content-Length', 'X-Foo', 'X-Bar'],
+  maxAge: 86400 // Preflight cache for 24 hours
+};
+
+// Apply CORS middleware
+app.use(cors(corsOptions));
+
+// Additional security headers for network access
+app.use((req, res, next) => {
+  // Allow any origin to access (remove in production if needed)
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, X-Access-Token');
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
 
 const server = app.listen(PORT, HOST, () => {
   // Get network interfaces to show available IPs
@@ -37,6 +82,7 @@ const server = app.listen(PORT, HOST, () => {
   console.log(`📋 API Info: http://localhost:${PORT}/api/info`);
   console.log(`📁 Ready to analyze logs from any file path!`);
   console.log(`⚠️  Server accepting connections from ALL network interfaces`);
+  console.log(`🌐 CORS enabled for cross-origin requests`);
 });
 
 // Enhanced timeout handling for network requests
